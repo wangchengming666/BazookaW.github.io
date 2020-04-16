@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>Thread类和Runnable接口 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Thread类和Runnable接口</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 16, 2020&nbsp;&nbsp;19:48:50</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>如果我们需要有一个“线程”类，JDK提供了<code>Thread</code>类和<code>Runnalble</code>接口来让我们实现自己的“线程”类。</p>
+<ul>
+<li>继承Thread类，并重写run方法（注意：Thread类实现了Runnable接口）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class Thread implements Runnable &#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>实现Runnable接口的run方法</li>
+</ul>
+<h5 id="继承Thread类"><a href="#继承Thread类" class="headerlink" title="继承Thread类"></a>继承Thread类</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">static class MyThread extends Thread &#123;</span><br><span class="line">       @Override</span><br><span class="line">       public void run() &#123;</span><br><span class="line">           System.out.println(&quot;MyThread&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public static void main(String[] args) &#123;</span><br><span class="line">       Thread t1 &#x3D; new MyThread();</span><br><span class="line">       t1.start();</span><br><span class="line">       System.out.println(t1.getName() + &quot;运行结束&quot;);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>使用<code>start()</code>方法启动一个线程，注意不能多次调用<code>start()</code>方法，否则会抛出异常。</p>
+<h5 id="实现Runnable接口"><a href="#实现Runnable接口" class="headerlink" title="实现Runnable接口"></a>实现Runnable接口</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">static class MyThread1 implements Runnable &#123;</span><br><span class="line">       @Override</span><br><span class="line">       public void run() &#123;</span><br><span class="line">           System.out.println(&quot;MyThread1&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public static void main(String[] args) &#123;</span><br><span class="line">	new Thread(new MyThread1()).start();</span><br><span class="line">	System.out.println(&quot;运行结束&quot;);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Thread类的几个常用方法"><a href="#Thread类的几个常用方法" class="headerlink" title="Thread类的几个常用方法"></a>Thread类的几个常用方法</h5><ul>
+<li><code>currentThread()</code>：静态方法，返回对当前正在执行的线程对象的引用</li>
+</ul>
+<p>该方法可以可以返回代码段正在被哪个线程调用的信息。实例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">	 System.out.println(Thread.currentThread().getName());</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>结果会在控制台打印<code>main</code>，证明main方法正在被名字叫main的线程调用。<br>修改代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">static class MyThread extends Thread &#123;</span><br><span class="line"></span><br><span class="line">       public MyThread() &#123;</span><br><span class="line">           System.out.println(&quot;构造方法打印：&quot; + Thread.currentThread().getName());</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       @Override</span><br><span class="line">       public void run() &#123;</span><br><span class="line">           System.out.println(&quot;run方法打印：&quot; + Thread.currentThread().getName());</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">       Thread t1 &#x3D; new MyThread();</span><br><span class="line">       t1.start();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果如下，证明构造函数是被main线程调用的，而<code>run()</code>方法是被名叫“Thread-0”调用的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">构造方法打印：main</span><br><span class="line">run方法打印：Thread-0</span><br></pre></td></tr></table></figure>
+<p>再次修改代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">static class MyThread extends Thread &#123;</span><br><span class="line"></span><br><span class="line">       public MyThread() &#123;</span><br><span class="line">           System.out.println(&quot;构造方法打印：&quot; + Thread.currentThread().getName());</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       @Override</span><br><span class="line">       public void run() &#123;</span><br><span class="line">           System.out.println(&quot;run方法打印：&quot; + Thread.currentThread().getName());</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   static class MyThread1 implements Runnable &#123;</span><br><span class="line">       @Override</span><br><span class="line">       public void run() &#123;</span><br><span class="line">           System.out.println(&quot;MyThread1&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public static void main(String[] args) &#123;</span><br><span class="line">       Thread t1 &#x3D; new MyThread();</span><br><span class="line">       &#x2F;&#x2F; t1.start();</span><br><span class="line">       t1.run();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果如下，证明两个线程都是被main调用的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">构造方法打印：main</span><br><span class="line">run方法打印：main</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>isAlive()</code>方法：是判断当前线程是不是出于活动状态</li>
+<li><code>sleep()</code>方法：静态方法，使当前线程睡眠一段时间</li>
+<li><code>start()</code>：开始执行线程的方法，java虚拟机会调用线程内的run()方法</li>
+<li><code>yield()</code>：yield在英语里有放弃的意思，同样，这里的yield()指的是当前线程愿意让出对当前处理器的占用。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">static class MyThread extends Thread &#123;</span><br><span class="line">       @Override</span><br><span class="line">       public void run() &#123;</span><br><span class="line">           long beginTime &#x3D; System.currentTimeMillis();</span><br><span class="line">           int count &#x3D; 0;</span><br><span class="line">           for (int i &#x3D; 0; i &lt; 5000000; i++) &#123;</span><br><span class="line">               Thread.yield();</span><br><span class="line">               count &#x3D; count + (i + 1);</span><br><span class="line">           &#125;</span><br><span class="line">           long endTime &#x3D; System.currentTimeMillis();</span><br><span class="line">           System.out.println(&quot;用时：&quot; + (endTime - beginTime));</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">       Thread t1 &#x3D; new MyThread();</span><br><span class="line">       t1.start();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>当 <code>Thread.yield();</code>这句代码被注释掉之后，输出结果为<code>用时：4</code>。 当<code>Thread.yield();</code>这句代码没有被注释掉之后，输出结果为<code>用时：1515</code>。所以证明<code>yield()</code>方法会放弃当前资源，将CPU让给其他资源做事情，所以导致速度变慢。</p>
+<ul>
+<li><code>Thread.stop()</code>：暴力停止线程， 不推荐这么做。</li>
+<li><code>Thread.interrupt()</code>：推荐使用此方法。此方法是在当前线程中打印一个停止的标记，并不是真正的停止线程。<ul>
+<li>this.interrupted()，测试当前线程是否已经中断，执行后具有将状态标志清除为false的功能</li>
+<li>this.isInterrupted()，测试线程Thread对象是否已经是中断状态，但不会清除状态标志</li>
+</ul>
+</li>
+</ul>
+<h5 id="守护线程"><a href="#守护线程" class="headerlink" title="守护线程"></a>守护线程</h5><p>User Thread（用户线程）和Daemon Thread（守护线程）从本质上来说并没有什么区别，唯一的不同之处就在于虚拟机的离开：如果用户线程已经全部退出运行了，只剩下守护线程存在了，虚拟机也就退出了。 因为没有了被守护者，守护线程也就没有工作可做了，也就没有继续运行程序的必要了。</p>
+<h5 id="线程的优先级"><a href="#线程的优先级" class="headerlink" title="线程的优先级"></a>线程的优先级</h5><p>首先看下JDK对线程优先级的设置有哪些：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> &#x2F;**</span><br><span class="line">  * The minimum priority that a thread can have.</span><br><span class="line">  *&#x2F;</span><br><span class="line"> public final static int MIN_PRIORITY &#x3D; 1;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">  * The default priority that is assigned to a thread.</span><br><span class="line">  *&#x2F;</span><br><span class="line"> public final static int NORM_PRIORITY &#x3D; 5;</span><br><span class="line"></span><br><span class="line"> &#x2F;**</span><br><span class="line">  * The maximum priority that a thread can have.</span><br><span class="line">  *&#x2F;</span><br><span class="line"> public final static int MAX_PRIORITY &#x3D; 10;</span><br></pre></td></tr></table></figure>
+<p>那么JDK是通过什么方法设置线程的优先级呢？答案是通过<code>setPriority(int newPriority)</code>这个方法设置优先级，参数<code>newPriority</code>越大，优先级越高。但是需要注意的是优先级虽然高，占得CPU资源较多，但是也不能保证优先级高的线程全部执行完，因为<code>优先级具有随机性</code>。</p>
+<h5 id="Thread类与Runnable接口的比较"><a href="#Thread类与Runnable接口的比较" class="headerlink" title="Thread类与Runnable接口的比较"></a>Thread类与Runnable接口的比较</h5><p>实现一个自定义的线程类，可以有继承Thread类或者实现Runnable接口这两种方式，它们之间有什么优劣呢？</p>
+<ul>
+<li>由于Java“单继承，多实现”的特性，Runnable接口使用起来比Thread更灵活。</li>
+<li>Runnable接口出现更符合面向对象，将线程单独进行对象的封装。</li>
+<li>Runnable接口出现，降低了线程对象和线程任务的耦合性。</li>
+<li>如果使用线程时不需要使用Thread类的诸多方法，显然使用Runnable接口更为轻量。</li>
+</ul>
+<p>所以，我们通常优先使用“实现Runnable接口”这种方式来自定义线程类。</p>
+<h5 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h5><ul>
+<li><a href="https://www.cnblogs.com/yanggb/p/11702843.html" target="_blank" rel="noopener">Java中的守护线程</a></li>
+<li>《Java多线程编程核心技术》</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Wry</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://wry1610.com/2020/04/16/Thread%E7%B1%BB%E5%92%8CRunnable%E6%8E%A5%E5%8F%A3/">http://wry1610.com/2020/04/16/Thread%E7%B1%BB%E5%92%8CRunnable%E6%8E%A5%E5%8F%A3/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/"># Java多线程进阶</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/16/Callable%E3%80%81Future%E4%B8%8EFutureTask/">Callable、Future与FutureTask</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/16/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">进程与线程的基本概念</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
