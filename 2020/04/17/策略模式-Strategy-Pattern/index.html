@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>策略模式(Strategy Pattern) | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">策略模式(Strategy Pattern)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;13:55:19</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ul>
+<li><p>策略模式定义<br>策略模式是一种比较简单的设计模式，也叫做政策模式，策略模式的核心就是面向对象的继承和多态机制。Define a family of algorithms, encapsulate each one, and make them interchangeable. 定义一组算法，将每个算法都封装起来，并且使它们之间可以互换。</p>
+</li>
+<li><p>策略模式通用类图</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20181218152326385.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>策略模式的三个角色：</p>
+<ul>
+<li>Context封装角色：起到承上启下的作用。屏蔽了高层模块对策略、算法的直接访问。</li>
+<li>Strategy抽象策略角色：策略、算法的抽象，通常为借口，定义每个策略、算法必须有的方法和属性。</li>
+<li>ConcreteStrategy具体策略角色：实现 Strategy抽象策略角色，包含具体的算法。</li>
+</ul>
+</li>
+<li><p>策略模式通用代码<br>抽象策略借口</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Strategy &#123;</span><br><span class="line"></span><br><span class="line">	void sth();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>封装角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Context &#123;</span><br><span class="line"></span><br><span class="line">	private Strategy strategy &#x3D; null;</span><br><span class="line"></span><br><span class="line">	public Context(Strategy _strategy) &#123;</span><br><span class="line">		this.strategy &#x3D; _strategy;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 封装后的策略方法</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public void doAnything() &#123;</span><br><span class="line">		this.strategy.sth();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体策略实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteStrategy1 implements Strategy&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void sth() &#123;</span><br><span class="line">		</span><br><span class="line">		System.out.println(&quot;策略算法实现1。。。&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class ConcreteStrategy2 implements Strategy&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void sth() &#123;</span><br><span class="line">		</span><br><span class="line">		System.out.println(&quot;策略算法实现2。。。&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">		Strategy strategy &#x3D; new ConcreteStrategy1();</span><br><span class="line">		</span><br><span class="line">		Context context &#x3D; new Context(strategy);</span><br><span class="line">		</span><br><span class="line">		context.doAnything();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">策略算法实现1。。。</span><br></pre></td></tr></table></figure>
+
+<p>实例我暂时没有想到太好的，所以套用一下书中的例子。</p>
+<ul>
+<li>策略模式实例代码</li>
+</ul>
+<p>抽象策略</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Strategy &#123;</span><br><span class="line"></span><br><span class="line">	void operate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>锦囊</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class Context &#123;</span><br><span class="line"></span><br><span class="line">	private Strategy strategy;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 构造函数，要你使用哪个妙计</span><br><span class="line">	public Context(Strategy strategy) &#123;</span><br><span class="line">		this.strategy &#x3D; strategy;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setStrategy(Strategy strategy) &#123;</span><br><span class="line">		this.strategy &#x3D; strategy;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		this.strategy.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体策略类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class GivenGreenLight implements Strategy &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		System.out.println(&quot;求吴国太开个绿灯，放行&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class BlackEnemy implements Strategy &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		System.out.println(&quot;孙夫人断后，挡住追兵&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class BackDoor implements Strategy &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		System.out.println(&quot;找乔国老帮忙，让吴国太给孙权施加压力，使孙权不能杀刘备&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用类（周瑜）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public class Zhaoyun &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Context context;</span><br><span class="line"></span><br><span class="line">		System.out.println(&quot;----------刚到吴国使用第一个锦囊---------------&quot;);</span><br><span class="line">		context &#x3D; new Context(new BackDoor());</span><br><span class="line">		context.operate();</span><br><span class="line">		System.out.println(&quot;\n&quot;);</span><br><span class="line"></span><br><span class="line">		System.out.println(&quot;----------刘备乐不思蜀使用第二个锦囊---------------&quot;);</span><br><span class="line">		context.setStrategy(new GivenGreenLight());</span><br><span class="line">		context.operate();</span><br><span class="line">		System.out.println(&quot;\n&quot;);</span><br><span class="line"></span><br><span class="line">		System.out.println(&quot;----------孙权的追兵来了，使用第三个锦囊---------------&quot;);</span><br><span class="line">		context.setStrategy(new BlackEnemy());</span><br><span class="line">		context.operate();</span><br><span class="line">		System.out.println(&quot;\n&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">----------刚到吴国使用第一个锦囊---------------</span><br><span class="line">找乔国老帮忙，让吴国太给孙权施加压力，使孙权不能杀刘备</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">----------刘备乐不思蜀使用第二个锦囊---------------</span><br><span class="line">求吴国太开个绿灯，放行</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">----------孙权的追兵来了，使用第三个锦囊---------------</span><br><span class="line">孙夫人断后，挡住追兵</span><br></pre></td></tr></table></figure>
+<ul>
+<li>策略模式的优缺点<ul>
+<li>策略类之间可以自由切换，由于策略类实现自同一个抽象，所以他们之间可以自由切换。</li>
+<li>可扩展性强，增加一个新的策略对策略模式来说非常容易。</li>
+<li>策略类过多的时候不易维护。</li>
+</ul>
+</li>
+<li>策略模式使用场景<ul>
+<li>当几个类的具体逻辑（算法）相同的时候，只在小部分地方有区别可以考虑策略模式。</li>
+<li>有几种相似的行为（算法），客户端需要动态地决定使用哪一种，那么可以使用策略模式。</li>
+</ul>
+</li>
+</ul>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F-Iterator-Pattern/">迭代器模式(Iterator Pattern)</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F-Adapter-Pattern/">适配器模式(Adapter Pattern)</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

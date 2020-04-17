@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>装饰模式(Decorator Pattern) | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">装饰模式(Decorator Pattern)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;13:55:21</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ul>
+<li><p>装饰模式定义</p>
+<ul>
+<li>官方定义：Attach additional responsibilities to an object dynamically keeping the same interface. Decorators provide a flexible alternative to subclassing for extending functionally. 动态地给一个对象添加一些额外的职责。就增加功能来说，装饰模式相比生成子类更为灵活。</li>
+<li>自己的理解：1️⃣在不改变原类文件以及不使用继承的情况下，动态地将责任附加到对象上，从而实现动态拓展一个对象的功能。它是通过创建一个包装对象，也就是装饰来包裹真实的对象。2️⃣通常可以使用继承来实现功能的拓展，如果这些需要拓展的功能的种类很繁多，那么势必生成很多子类，增加系统的复杂性，这也是装饰器模式设计的初衷。3️⃣符合开闭原则：类应该对拓展开放，对修改关闭。</li>
+</ul>
+</li>
+<li><p>装饰模式通用类图</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20190125115330605.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>装饰模式主要有四个角色：</p>
+<ul>
+<li>Component是基类。通常是一个抽象类或者一个接口，定义了属性或者方法，方法的实现可以由子类实现或者自己实现。通常不会直接使用该类，而是通过继承该类来实现特定的功能，它约束了整个继承树的行为。比如说，如果Component代表人，即使通过装饰也不会使人变成别的动物。 </li>
+<li>ConcreteComponent是Component的子类，实现了相应的方法，它充当了“被装饰者”的角色。 </li>
+<li>Decorator也是Component的子类，它是装饰者共同实现的抽象类（也可以是接口）。比如说，Decorator代表衣服这一类装饰者，那么它的子类应该是T恤、裙子这样的具体的装饰者。 </li>
+<li>ConcreteDecorator是Decorator的子类，是具体的装饰者，由于它同时也是Component的子类，因此它能方便地拓展Component的状态（比如添加新的方法）。每个装饰者都应该有一个实例变量用以保存某个Component的引用，这也是利用了组合的特性。在持有Component的引用后，由于其自身也是Component的子类，那么，相当于ConcreteDecorator包裹了Component，不但有Component的特性，同时自身也可以有别的特性，也就是所谓的装饰。</li>
+</ul>
+</li>
+<li><p>装饰模式通用代码</p>
+</li>
+</ul>
+<p>抽象构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Component &#123;</span><br><span class="line"></span><br><span class="line">	public abstract void operate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreateComponent extends Component&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		System.out.println(&quot;do something...&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象装饰者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Decorator extends Component &#123;</span><br><span class="line"></span><br><span class="line">	private Component component &#x3D; null;</span><br><span class="line"></span><br><span class="line">	public Decorator(Component _component) &#123;</span><br><span class="line">		this.component &#x3D; _component;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		this.component.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体装饰类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteDecorator1 extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">	public ConcreteDecorator1(Component _component) &#123;</span><br><span class="line">		super(_component);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void method1() &#123;</span><br><span class="line">		System.out.println(&quot;method1 装饰&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		this.method1();</span><br><span class="line">		super.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class ConcreteDecorator2 extends Decorator&#123;</span><br><span class="line"></span><br><span class="line">	public ConcreteDecorator2(Component _component) &#123;</span><br><span class="line">		super(_component);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void method2() &#123;</span><br><span class="line">		System.out.println(&quot;method2 装饰&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void operate() &#123;</span><br><span class="line">		this.method2();</span><br><span class="line">		super.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] agrs) &#123;</span><br><span class="line">		</span><br><span class="line">		Component component &#x3D; new ConcreateComponent();</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; first </span><br><span class="line">		component &#x3D; new ConcreteDecorator1(component);</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; second</span><br><span class="line">		component &#x3D; new ConcreteDecorator2(component);</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; run</span><br><span class="line">		component.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>装饰模式实例类图</li>
+</ul>
+<p>装饰模式在Java中经常出现的地方就是JavaIO。提到JavaIO，脑海中就冒出了大量的类：InputStream、FileInputStream、BufferedInputStream……等。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190125130909837.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>装饰模式实例代码<br>完成一个将读取到的英文字符全切换成大写的转换流。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">public class ToUpperCaseInputStream extends FilterInputStream &#123;</span><br><span class="line"></span><br><span class="line">	InputStream inputStream;</span><br><span class="line"></span><br><span class="line">	protected ToUpperCaseInputStream(InputStream in) &#123;</span><br><span class="line">		super(in);</span><br><span class="line">		this.inputStream &#x3D; in;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 读取单个字节</span><br><span class="line">	 * </span><br><span class="line">	 * @return</span><br><span class="line">	 * @throws IOException</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	@Override</span><br><span class="line">	public int read() throws IOException &#123;</span><br><span class="line">		&#x2F;&#x2F; 获取父类读取的结果</span><br><span class="line">		int result &#x3D; super.read();</span><br><span class="line">		&#x2F;&#x2F; 如果读取到字符a,就抛出异常</span><br><span class="line">		if (result &#x3D;&#x3D; &#39;a&#39;) &#123;</span><br><span class="line">			throw new ToUpperException();</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F; 如果等于-1,说明无内容</span><br><span class="line">		&#x2F;&#x2F; 否则,将字节转成char,再将char转换成大写的后返回</span><br><span class="line">		&#x2F;&#x2F; 返回值类型是int类型,这里返回一个字符会被自动转型</span><br><span class="line">		return (result &#x3D;&#x3D; -1 ? result : Character.toUpperCase(Character.toChars(result)[0]));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public int read(byte[] b, int off, int len) throws IOException &#123;</span><br><span class="line">		int result &#x3D; super.read(b, off, len);</span><br><span class="line">		for (int i &#x3D; off; i &lt; off + result; i++) &#123;</span><br><span class="line">			&#x2F;&#x2F; 将字节转成大写字符后再转成字节</span><br><span class="line">			b[i] &#x3D; (byte) Character.toUpperCase((char) b[i]);</span><br><span class="line">		&#125;</span><br><span class="line">		return result;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;***</span><br><span class="line">	 * 这里是一个内部类,自定义异常</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	class ToUpperException extends IOException &#123;</span><br><span class="line">		@Override</span><br><span class="line">		public void printStackTrace() &#123;</span><br><span class="line">			System.out.println(&quot;不好意思我遇到异常了,向上转型失败啦&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		int result &#x3D; 0;</span><br><span class="line">		InputStream inputStream &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			inputStream &#x3D; new ToUpperCaseInputStream(new BufferedInputStream(new FileInputStream(&quot;file path&quot;)));</span><br><span class="line"></span><br><span class="line">			while ((result &#x3D; inputStream.read()) &gt;&#x3D; 0) &#123;</span><br><span class="line">				System.out.print((char) result);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		&#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				inputStream.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>装饰模式总结<ul>
+<li>装饰者模式可以非常的贴合六大原则之一的开闭原则。</li>
+<li>继承虽然也可以实现扩展，但是继承的扩展需要已经扩展需求，在编译期扩展，而装饰者模式可以实现在运行期扩展。</li>
+<li>使用装饰者模式,类的数量会增长很多，不能过度使用。</li>
+</ul>
+</li>
+</ul>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/">设计模式总结</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F-Observer-Pattern/">观察者模式(Observer Pattern)</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

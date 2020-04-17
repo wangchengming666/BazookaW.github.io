@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>责任链模式(Chain of Responsibility Pattern) | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">责任链模式(Chain of Responsibility Pattern)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;10:44:10</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ul>
+<li>责任链模式定义</li>
+</ul>
+<p>责任链的重点是在“链”上，由一条链去处理相似的请求在链中决定谁来处理这个请求，并返回相应的结果。其定义为：Avoid coupling the sender of a request to its receiver by giving more than one project a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it. 使多个对象都有机会处理请求，从而避免了请求的发送者和接收者之间的耦合关系。将这些对象连成一条链，并沿着这条链传递改请求，直到有对象处理它为止。</p>
+<ul>
+<li>责任链模式通用类图</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20181217104312369.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>责任链模式通用代码<br>首先是抽象处理者，①定义一个请求的处理方法handlerMessage。②定义一个链的编排方法。③定义具体的请求者必须实现的方法。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Handler &#123;</span><br><span class="line"></span><br><span class="line">	private Handler nextHandler;</span><br><span class="line"></span><br><span class="line">	@SuppressWarnings(&quot;unlikely-arg-type&quot;)</span><br><span class="line">	public final Response hanleMessage(Request request) &#123;</span><br><span class="line"></span><br><span class="line">		Response response &#x3D; null;</span><br><span class="line"></span><br><span class="line">		if (this.getHandlerLevel().equals(request.getRequestLevel())) &#123;</span><br><span class="line">			response &#x3D; this.echo(request);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			if(this.nextHandler !&#x3D; null) &#123;</span><br><span class="line">				response &#x3D; this.nextHandler.hanleMessage(request);</span><br><span class="line">			&#125;else &#123;</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return response;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setNext(Handler _handler) &#123;</span><br><span class="line">		this.nextHandler &#x3D; _handler;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	protected abstract Level getHandlerLevel();</span><br><span class="line"></span><br><span class="line">	protected abstract Response echo(Request request);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Level &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Request &#123;</span><br><span class="line"></span><br><span class="line">	public Level getRequestLevel() &#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Response &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的处理者1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteHandler1 extends Handler &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	protected Level getHandlerLevel() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	protected Response echo(Request request) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的处理者2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteHandler2 extends Handler&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	protected Level getHandlerLevel() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	protected Response echo(Request request) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的处理者3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteHandler3 extends Handler&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	protected Level getHandlerLevel() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	protected Response echo(Request request) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; 声明处理节点</span><br><span class="line">		Handler h1 &#x3D; new ConcreteHandler1();</span><br><span class="line">		Handler h2 &#x3D; new ConcreteHandler2();</span><br><span class="line">		Handler h3 &#x3D; new ConcreteHandler3();</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; 处理顺序</span><br><span class="line">		h1.setNext(h2);</span><br><span class="line">		h1.setNext(h3);</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; 返回结果</span><br><span class="line">		Response response &#x3D; h1.hanleMessage(new Request());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>责任链模式实例类图<br>其实责任链模式在我们工作中还是比较常见的，比如提交请假申请的流程就可以看做一个责任链模式，首先老大给批准，接下来经理批准，最后总监批准，这个过程就是一个链。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20181217112940337.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>责任链模式实例代码</li>
+</ul>
+<p>首先是抽象处理者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Handler &#123;</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 持有下一个处理请求的对象</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	protected Handler successor &#x3D; null;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 取值方法</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public Handler getSuccessor() &#123;</span><br><span class="line">		return successor;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 设置下一个处理请求的对象</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public void setSuccessor(Handler successor) &#123;</span><br><span class="line">		this.successor &#x3D; successor;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * @return 成功或失败的具体通知</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public abstract String handleRequest(String user, int dayNum);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来分别是TeamLeader，Manager和GeneralManager</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class TeamLeader extends Handler &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public String handleRequest(String user, int dayNum) &#123;</span><br><span class="line"></span><br><span class="line">		String str &#x3D; &quot;&quot;;</span><br><span class="line">		&#x2F;&#x2F; TL权限比较小</span><br><span class="line">		if (dayNum &lt; 3) &#123;</span><br><span class="line">			if (&quot;张三&quot;.equals(user)) &#123;</span><br><span class="line">				str &#x3D; &quot;成功：TL同意【&quot; + user + &quot;】请假&quot; + dayNum + &quot;天&quot;;</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				&#x2F;&#x2F; 其他人一律不同意</span><br><span class="line">				str &#x3D; &quot;其他人一律不同意&quot;;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			&#x2F;&#x2F; 请假超过三天的</span><br><span class="line">			if (getSuccessor() !&#x3D; null) &#123;</span><br><span class="line">				return getSuccessor().handleRequest(user, dayNum);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return str;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class Manager extends Handler&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public String handleRequest(String user, int dayNum) &#123;</span><br><span class="line"></span><br><span class="line">		String str &#x3D; &quot;&quot;;</span><br><span class="line">		&#x2F;&#x2F; 经理权限相对较大</span><br><span class="line">		if (dayNum &lt; 5) &#123;</span><br><span class="line">			if (&quot;张三&quot;.equals(user)) &#123;</span><br><span class="line">				str &#x3D; &quot;成功：经理同意【&quot; + user + &quot;】请假&quot; + dayNum + &quot;天&quot;;</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				&#x2F;&#x2F; 其他人一律不同意</span><br><span class="line">				str &#x3D; &quot;其他人一律不同意&quot;;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			&#x2F;&#x2F; 请假超过五天的</span><br><span class="line">			if (getSuccessor() !&#x3D; null) &#123;</span><br><span class="line">				return getSuccessor().handleRequest(user, dayNum);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return str;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class GeneralManager extends Handler &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public String handleRequest(String user, int dayNum) &#123;</span><br><span class="line"></span><br><span class="line">		String str &#x3D; &quot;&quot;;</span><br><span class="line">		&#x2F;&#x2F; 总监权限最大</span><br><span class="line">		if (dayNum &lt; 10) &#123;</span><br><span class="line">			if (&quot;张三&quot;.equals(user)) &#123;</span><br><span class="line">				str &#x3D; &quot;成功：总监同意【&quot; + user + &quot;】请假&quot; + dayNum + &quot;天&quot;;</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				&#x2F;&#x2F; 其他人一律不同意</span><br><span class="line">				str &#x3D; &quot;其他人一律不同意&quot;;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			&#x2F;&#x2F; 如果还有后继的处理对象，继续传递</span><br><span class="line">			if (getSuccessor() !&#x3D; null) &#123;</span><br><span class="line">				return getSuccessor().handleRequest(user, dayNum);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return str;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">		Handler h1 &#x3D; new TeamLeader();</span><br><span class="line">		Handler h2 &#x3D; new Manager();</span><br><span class="line">		Handler h3 &#x3D; new GeneralManager();</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F;开始测试</span><br><span class="line">        String test1 &#x3D; h1.handleRequest(&quot;张三&quot;, 2);</span><br><span class="line">        System.out.println(&quot;test1 &#x3D; &quot; + test1);</span><br><span class="line">        String test2 &#x3D; h3.handleRequest(&quot;李四&quot;, 2);</span><br><span class="line">        System.out.println(&quot;test2 &#x3D; &quot; + test2);</span><br><span class="line">        System.out.println(&quot;---------------------------------------&quot;);</span><br><span class="line">        </span><br><span class="line">        String test3 &#x3D; h2.handleRequest(&quot;张三&quot;, 4);</span><br><span class="line">        System.out.println(&quot;test3 &#x3D; &quot; + test3);</span><br><span class="line">        String test4 &#x3D; h3.handleRequest(&quot;李四&quot;, 4);</span><br><span class="line">        System.out.println(&quot;test4 &#x3D; &quot; + test4);</span><br><span class="line">        System.out.println(&quot;---------------------------------------&quot;);</span><br><span class="line">        </span><br><span class="line">        String test5 &#x3D; h3.handleRequest(&quot;张三&quot;, 7);</span><br><span class="line">        System.out.println(&quot;test5 &#x3D; &quot; + test5);</span><br><span class="line">        String test6 &#x3D; h3.handleRequest(&quot;李四&quot;, 7);</span><br><span class="line">        System.out.println(&quot;test6 &#x3D; &quot; + test6);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">test1 &#x3D; 成功：TL同意【张三】请假2天</span><br><span class="line">test2 &#x3D; 其他人一律不同意</span><br><span class="line">---------------------------------------</span><br><span class="line">test3 &#x3D; 成功：经理同意【张三】请假4天</span><br><span class="line">test4 &#x3D; 其他人一律不同意</span><br><span class="line">---------------------------------------</span><br><span class="line">test5 &#x3D; 成功：总监同意【张三】请假7天</span><br><span class="line">test6 &#x3D; 其他人一律不同意</span><br></pre></td></tr></table></figure>
+
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F-Command-Pattern/">命令模式(Command Pattern)</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-Mediator-Pattern/">中介者模式(Mediator Pattern)</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

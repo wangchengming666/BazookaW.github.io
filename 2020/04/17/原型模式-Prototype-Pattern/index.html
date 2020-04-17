@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>原型模式(Prototype Pattern) | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">原型模式(Prototype Pattern)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;10:44:08</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>原型模式在我们平时工作中还是很常用的，而且使用起来非常简单，其核心是一个clone方法。</p>
+<ul>
+<li><p>原型模式的定义<br>Specify the kinds of objects to create using a prototypical instance，and create new objects by copying this prototype. 用原型实例指定创建对象的种类，并且通过拷贝这些原型创建新的对象。</p>
+</li>
+<li><p>原型模式的要点</p>
+<ul>
+<li>原型模式主要用于对象的复制。</li>
+<li>原型类Prototype必须实现Cloneable接口。在Java中提供了一个Cloneable接口，来标识这个对象是可以拷贝的，在JVM中具有这个标记的对象才有可能被拷贝。</li>
+<li>重写Object类中的clone方法。作用是返回对象的一个拷贝，但是其作用域protected类型的，一般的类无法调用。所以Prototype类需要将clone方法的作用域修改为public类型。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>原型模式的通用类图<br><img src="https://img-blog.csdnimg.cn/20181115104326338.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+</li>
+<li><p>原型模式的通用代码</p>
+</li>
+</ul>
+<p>原型类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class Prototype implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">	&#x2F;* (non-Javadoc)</span><br><span class="line">	 * @see java.lang.Object#clone()</span><br><span class="line">	 * </span><br><span class="line">	 * 重写Object的clone()方法，必须是public</span><br><span class="line">	 * </span><br><span class="line">	 *&#x2F;</span><br><span class="line">	@Override</span><br><span class="line">	public Prototype clone() &#123;</span><br><span class="line"></span><br><span class="line">		Protptype prototype &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			prototype &#x3D; (Protptype) super.clone();</span><br><span class="line">		&#125; catch (CloneNotSupportedException ex) &#123;</span><br><span class="line">			ex.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		return prototype;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class ConcretePrototype extends Prototype&#123;  </span><br><span class="line">    public void show()&#123;  </span><br><span class="line">        System.out.println(&quot;原型模式实现类&quot;);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		ConcretePrototype cp &#x3D; new ConcretePrototype();</span><br><span class="line">		for (int i &#x3D; 0; i &lt; 10; i++) &#123;</span><br><span class="line">			ConcretePrototype clonecp &#x3D; (ConcretePrototype) cp.clone();</span><br><span class="line">			clonecp.show();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br><span class="line">原型模式实现类</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>原型模式的实例类图</li>
+</ul>
+<p>在现实生活中有这样一种场景，说起来也很烦。双十一刚过，各种垃圾短信一顿狂轰乱炸，让人很不爽。其实这种大批量的发送短信的场景，原型模式是最适合不过了。</p>
+<p><img src="https://img-blog.csdnimg.cn/20181115144721812.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>原型模式的实例代码</li>
+</ul>
+<p>模板如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package example;</span><br><span class="line"></span><br><span class="line">public class Temeplate &#123;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; 短信名字</span><br><span class="line">	private String subject &#x3D; &quot;【天猫双11活动】&quot;;</span><br><span class="line">	</span><br><span class="line">	private String content &#x3D; &quot;双11活动通知：满99减66.&quot;;</span><br><span class="line"></span><br><span class="line">	public String getSubject() &#123;</span><br><span class="line">		return subject;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getContent() &#123;</span><br><span class="line">		return content;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Message类如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">public class Message implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">	private String receiver;</span><br><span class="line"></span><br><span class="line">	private String subject;</span><br><span class="line"></span><br><span class="line">	private String content;</span><br><span class="line"></span><br><span class="line">	public Message(Temeplate temeplate) &#123;</span><br><span class="line">		this.subject &#x3D; temeplate.getSubject();</span><br><span class="line">		this.content &#x3D; temeplate.getContent();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public Message clone() &#123;</span><br><span class="line">		Message msg &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			msg &#x3D; (Message)super.clone();</span><br><span class="line">		&#125;catch(CloneNotSupportedException ex) &#123;</span><br><span class="line">			ex.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		return msg;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getReceiver() &#123;</span><br><span class="line">		return receiver;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setReceiver(String receiver) &#123;</span><br><span class="line">		this.receiver &#x3D; receiver;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getSubject() &#123;</span><br><span class="line">		return subject;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setSubject(String subject) &#123;</span><br><span class="line">		this.subject &#x3D; subject;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getContent() &#123;</span><br><span class="line">		return content;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setContent(String content) &#123;</span><br><span class="line">		this.content &#x3D; content;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实现类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	private static int count &#x3D; 10;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">		int i &#x3D; 0;</span><br><span class="line">		Message msg &#x3D; new Message(new Temeplate());</span><br><span class="line">		while (i &lt; count) &#123;</span><br><span class="line">			Message cloneMsg &#x3D; msg.clone();</span><br><span class="line">			Random rand &#x3D; new Random();</span><br><span class="line">			cloneMsg.setReceiver(rand.nextInt(1000000000) + 1+&quot;@qq.com&quot;);</span><br><span class="line">			send(cloneMsg);</span><br><span class="line">			i++;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public static void send(Message msg) &#123;</span><br><span class="line">		System.out.println(msg.getReceiver()+&quot;接收成功&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">243217580@qq.com接收成功</span><br><span class="line">670592356@qq.com接收成功</span><br><span class="line">75390656@qq.com接收成功</span><br><span class="line">770711651@qq.com接收成功</span><br><span class="line">728774957@qq.com接收成功</span><br><span class="line">174509800@qq.com接收成功</span><br><span class="line">567463361@qq.com接收成功</span><br><span class="line">49934936@qq.com接收成功</span><br><span class="line">861293893@qq.com接收成功</span><br><span class="line">621002108@qq.com接收成功</span><br></pre></td></tr></table></figure>
+<p>这样子就可以做到群发的效果，也就是商家只需要一份名单，就可以给名单里的人发送一样的短信。</p>
+<ul>
+<li>原型模式的注意事项<ul>
+<li>使用原型模式复制对象不会调用类的构造方法。因为对象的复制是通过调用Object类的clone方法来完成的，它直接在内存中复制数据，因此不会调用到类的构造方法。</li>
+<li>深拷贝与浅拷贝。Object类的clone方法只会拷贝对象中的基本的数据类型（byte、char、short、int、long、float、double、boolean）。如果要实现深拷贝，必须将原型模式中的数组、容器对象、引用对象等另行拷贝。</li>
+<li>clone和final是有冲突的。</li>
+</ul>
+</li>
+<li>原型模式的优点及适用场景<ul>
+<li>使用原型模式创建对象比直接new一个对象在性能上要好的多。</li>
+<li>简化对象的创建。</li>
+</ul>
+</li>
+</ul>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F-Proxy-Pattern/">代理模式(Proxy Pattern)</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F-Builder-Pattern/">建造者模式(Builder Pattern)</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

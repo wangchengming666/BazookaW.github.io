@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>观察者模式(Observer Pattern) | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">观察者模式(Observer Pattern)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;13:55:20</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ul>
+<li>观察者模式定义</li>
+</ul>
+<p>Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically. 定义对象之间一种一对多的依赖关系，使得每当一个对象改变状态，则所有依赖于它的对象都会得到通知并被自动更新。</p>
+<ul>
+<li>观察者模式通用类图</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20190124103852408.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>通过上面的类图，我们可以看到观察模式主要有四个角色：</p>
+<ul>
+<li>Subject被观察者：定义被观察者必须实现的职责，它必须能够动态的增加、取消观察者。将attach、detach、notify是三个方法放在一个容器里，一般用Vector(之所以使用Vector而不使用List，是因为多线程操作时，Vector在是安全的，而List则是不安全的)，attach方法是向这个容器中添加观察者对象；detach方法是从容器中移除观察者对象；notify方法是依次调用观察者对象的对应方法。</li>
+<li>Observer观察者：观察者角色一般是一个接口，它只有一个update方法，在被观察者状态发生变化时，这个方法就会被触发调用。</li>
+<li>ConcreteSubject具体的被观察者：定义被观察者自己的业务逻辑，同时定义对哪些事件进行通知。</li>
+<li>ConcreteObserver具体的观察者：每个观察者在接收到消息后的处理反应是不同的，每个观察者都有自己的处理逻辑。</li>
+</ul>
+</li>
+<li><p>观察者模式通用代码</p>
+</li>
+</ul>
+<p>被观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Subject &#123;</span><br><span class="line"></span><br><span class="line">	private Vector&lt;Observer&gt; obsVector &#x3D; new Vector&lt;Observer&gt;();</span><br><span class="line"></span><br><span class="line">	public void addObserver(Observer o) &#123;</span><br><span class="line">		this.obsVector.add(o);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void delObserver(Observer o) &#123;</span><br><span class="line">		this.obsVector.remove(o);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void notifyObserver() &#123;</span><br><span class="line">		obsVector.forEach(i -&gt; &#123;</span><br><span class="line">			i.update();</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的被观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteSubject extends Subject &#123;</span><br><span class="line"></span><br><span class="line">	public void doSth() &#123;</span><br><span class="line">		super.notifyObserver();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Observer &#123;</span><br><span class="line"></span><br><span class="line">	void update();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteObserver implements Observer&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void update() &#123;</span><br><span class="line">		System.out.println(&quot;接收消息并处理&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		</span><br><span class="line">		ConcreteSubject subject &#x3D; new ConcreteSubject();</span><br><span class="line">		</span><br><span class="line">		Observer obs &#x3D; new ConcreteObserver();</span><br><span class="line">		</span><br><span class="line">		subject.addObserver(obs);</span><br><span class="line">		</span><br><span class="line">		subject.doSth();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>观察者模式实例类图</li>
+</ul>
+<p>施耐庵写的《水浒传》相信很多人都看过，其中吴用等人 <code>智取生辰纲</code> 这个故事让人印象深刻。故事情节是这样的：在路经黄泥岗时路遇一批贩枣客人，又有一人贩酒而来，而这群贩枣客就是晁盖、吴用等人假扮的，吴用等人假装卖枣稳住杨志等人，白胜扮卖酒汉引诱对方，吴用在杨志放松警惕时下药在瓢里，白胜夺来倒在桶里麻倒对方，智取生辰纲。那么在这个故事中<code>生辰纲就可以看作是被观察者，杨志等人就可以看作是观察者，晁盖、吴用也可以看作是观察者</code>。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190124115449714.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>观察者模式实例代码<br>抽象被观察者</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 被观察者</span><br><span class="line"> * </span><br><span class="line"> * @author cm_wang</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public abstract class Subject &#123;</span><br><span class="line"></span><br><span class="line">	private Vector&lt;Observer&gt; obsVector &#x3D; new Vector&lt;Observer&gt;();</span><br><span class="line"></span><br><span class="line">	public void addObserver(Observer o) &#123;</span><br><span class="line">		this.obsVector.add(o);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void delObserver(Observer o) &#123;</span><br><span class="line">		this.obsVector.remove(o);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void notifyObserver() &#123;</span><br><span class="line">		obsVector.forEach(i -&gt; &#123;</span><br><span class="line">			i.update();</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 观察者</span><br><span class="line"> * </span><br><span class="line"> * @author cm_wang</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public interface Observer &#123;</span><br><span class="line"></span><br><span class="line">	void update();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的被观察者，也就是生辰纲</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class shengchengang extends Subject &#123;</span><br><span class="line"></span><br><span class="line">	public void doSth() &#123;</span><br><span class="line">		super.notifyObserver();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的观察者，也就是杨志等人，还有晁盖、吴用等人</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class wuyong implements Observer&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void update() &#123;</span><br><span class="line">		System.out.println(&quot;吴用等人假装卖枣稳住杨志等人&quot;);</span><br><span class="line">		System.out.println(&quot;吴用在杨志放松警惕时下药在瓢里&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class baisheng implements Observer&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void update() &#123;</span><br><span class="line">		System.out.println(&quot;白胜夺来倒在桶里麻倒对方&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class yangzhi implements Observer&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void update() &#123;</span><br><span class="line">		System.out.println(&quot;杨志等人喝了带蒙汗药的酒，就只能眼睁睁的看晁盖、吴用等人拿走生辰纲&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">		shengchengang subject &#x3D; new shengchengang();</span><br><span class="line"></span><br><span class="line">		Observer obs &#x3D; new yangzhi();</span><br><span class="line">		</span><br><span class="line">		Observer thief &#x3D; new wuyong();</span><br><span class="line"></span><br><span class="line">		Observer thief1 &#x3D; new baisheng();</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F; 吴用等人假装卖枣稳住杨志等人</span><br><span class="line">		subject.addObserver(thief);</span><br><span class="line">		&#x2F;&#x2F; 白胜夺来放有蒙汗药的瓢倒在桶里麻倒对方</span><br><span class="line">		subject.addObserver(thief1);</span><br><span class="line">		&#x2F;&#x2F; 杨志等人喝了带蒙汗药的酒</span><br><span class="line">		subject.addObserver(obs);</span><br><span class="line">		</span><br><span class="line">		subject.doSth();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">吴用等人假装卖枣稳住杨志等人</span><br><span class="line">吴用在杨志放松警惕时下药在瓢里</span><br><span class="line">白胜夺来倒在桶里麻倒对方</span><br><span class="line">杨志等人喝了带蒙汗药的酒，就只能眼睁睁的看晁盖、吴用等人拿走生辰纲</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>观察者模式的优点<ul>
+<li>观察者与被观察者之间是属于轻度的关联关系，并且是抽象耦合的。</li>
+<li>观察者模式是一种常用的触发机制，它形成一条触发链，依次对各个观察者的方法进行处理。</li>
+</ul>
+</li>
+<li>观察者模式的缺点<ul>
+<li>由于是链式触发，当观察者比较多的时候，性能问题是比较令人担忧的。</li>
+</ul>
+</li>
+</ul>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E8%A3%85%E9%A5%B0%E6%A8%A1%E5%BC%8F-Decorator-Pattern/">装饰模式(Decorator Pattern)</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F-Iterator-Pattern/">迭代器模式(Iterator Pattern)</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

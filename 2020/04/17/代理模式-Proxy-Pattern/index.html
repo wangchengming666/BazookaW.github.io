@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>代理模式(Proxy Pattern) | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">代理模式(Proxy Pattern)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;10:44:08</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>代理模式也叫做委托模式，在我们平时工作中其实很常用，静态代理、动态代理等。</p>
+<ul>
+<li><p>代理模式的定义<br>Provide a surrogate of placeholder for another object to control access to it. 为其他对象提供一种代理以控制对这个对象的访问。也可以理解为给目标对象提供一个代理对象，并由代理对象控制对目标对象的引用。</p>
+</li>
+<li><p>代理模式通用类图</p>
+<ul>
+<li>Subject：抽象主题角色，是一个接口。该接口是对象和它的代理共用的接口。</li>
+<li>RealSubject：真实主题角色，是实现抽象主题接口的类。</li>
+<li>Proxy：代理角色，内部含有对真实对象RealSubject的引用，从而可以操作真实对象。代理对象提供与真实对象相同的接口，以便在任何时刻都能代替真实对象。同时，代理对象可以在执行真实对象操作时，附加其他的操作，相当于对真实对象进行封装。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20181108102752670.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>代理模式通用代码</li>
+</ul>
+<p>抽象主题接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Subject &#123;</span><br><span class="line"></span><br><span class="line">	void request();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>真实主题类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class RealSubject implements Subject&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void request() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class Proxy implements Subject&#123;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 要代理哪个实现类</span><br><span class="line">	public Subject subject &#x3D; null;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; 默认被代理者</span><br><span class="line">	public Proxy() &#123;</span><br><span class="line">		this.subject &#x3D; new Proxy();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public Proxy(Object...objects) &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public void request() &#123;</span><br><span class="line">		this.subject.request();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>代理模式实例类图<br>这几年房价是涨的越来越快，有条件的小伙伴也都着急买房子。相信有很大一部分人是通过各种中介成交的，伴随的也是付出了一笔不小的费用，其实这个例子就可以理解为代理模式的一种。<br><img src="https://img-blog.csdnimg.cn/20181108110107810.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+</li>
+<li><p>代理模式实例代码</p>
+</li>
+</ul>
+<p>抽象主题接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Subject &#123;</span><br><span class="line"></span><br><span class="line">	void buyHouse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>真实主题类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class RealSubject implements Subject&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void buyHouse() &#123;</span><br><span class="line">		System.out.println(&quot;你好，我要买房子。&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>链家中介</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class LianJia implements Subject&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void buyHouse() &#123;</span><br><span class="line">		RealSubject subject &#x3D; new RealSubject();</span><br><span class="line">		subject.buyHouse();</span><br><span class="line">		lianximaijia();</span><br><span class="line">		deal();</span><br><span class="line">		shoufei();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void lianximaijia() &#123;</span><br><span class="line">		System.out.println(&quot;卖家联系成功。&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void deal() &#123;</span><br><span class="line">		System.out.println(&quot;成交。&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private void shoufei() &#123;</span><br><span class="line">		System.out.println(&quot;你好，房子成交后我们要收取总房款2%的手续费哦。&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] agrs) &#123;</span><br><span class="line">		Subject s &#x3D; new LianJia();</span><br><span class="line">		s.buyHouse();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">你好，我要买房子。</span><br><span class="line">卖家联系成功。</span><br><span class="line">成交。</span><br><span class="line">你好，房子成交后我们要收取总房款2%的手续费哦。</span><br></pre></td></tr></table></figure>
+
+<p>以上的代码我是基于静态代理的方法实现的。<strong><code>静态代理比较简单，是由程序员编写的代理类，并在程序运行前就编译好的，而不是由程序动态产生代理类，这就是所谓的静态。</code></strong></p>
+<ul>
+<li>动态代理版</li>
+</ul>
+<p><strong><code>在动态代理中我们不再需要再手动的创建代理类，我们只需要编写一个动态处理器就可以了。真正的代理对象由JDK在运行时为我们动态的来创建。</code></strong> 以下是动态代理的基本使用方法。</p>
+<blockquote>
+<pre><code>1.创建一个实现InvocationHandler接口的类，它必须实现invoke()方法
+
+2.创建被代理的类及接口
+
+3.调用Proxy的静态方法，创建一个代理类
+
+4.通过代理调用方法</code></pre></blockquote>
+<p>其余代码保持不变，要加一个 <strong><code>动态代理处理器</code></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class DynamicProxyHandler implements InvocationHandler &#123;</span><br><span class="line"></span><br><span class="line">	private Object object;</span><br><span class="line"></span><br><span class="line">	public DynamicProxyHandler(final Object object) &#123;</span><br><span class="line">		this.object &#x3D; object;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">		</span><br><span class="line">		System.out.println(&quot;动态代理开始---------&gt;&quot;);</span><br><span class="line">		Object result &#x3D; method.invoke(object, args);</span><br><span class="line">		System.out.println(&quot;动态代理结束---------&gt;&quot;);</span><br><span class="line">		return result;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后运行一下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] agrs) &#123;</span><br><span class="line">		&#x2F;&#x2F; 静态代理</span><br><span class="line">		&#x2F;&#x2F; Subject s &#x3D; new LianJia();</span><br><span class="line">		&#x2F;&#x2F; s.buyHouse();</span><br><span class="line"></span><br><span class="line">		&#x2F;&#x2F; 动态代理</span><br><span class="line">		Subject subject &#x3D; new LianJia();</span><br><span class="line">		Subject dynamicProxy &#x3D; (Subject) Proxy.newProxyInstance(Subject.class.getClassLoader(), new Class[] &#123; Subject.class &#125;,</span><br><span class="line">				new DynamicProxyHandler(subject));</span><br><span class="line">		dynamicProxy.buyHouse();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">动态代理开始---------&gt;</span><br><span class="line">你好，我要买房子。</span><br><span class="line">卖家联系成功。</span><br><span class="line">成交。</span><br><span class="line">你好，房子成交后我们要收取总房款2%的手续费哦。</span><br><span class="line">动态代理结束---------&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注意Proxy.newProxyInstance()方法接受三个参数：</li>
+</ul>
+<p>ClassLoader loader:指定当前目标对象使用的类加载器,获取加载器的方法是固定的<br>Class&lt;?&gt;[] interfaces:指定目标对象实现的接口的类型,使用泛型方式确认类型<br>InvocationHandler:指定动态处理器，执行目标对象的方法时,会触发事件处理器的方法</p>
+<ul>
+<li>代理模式的优点<ul>
+<li>协调调用者和被调用者，降低了系统的耦合度</li>
+<li>代理对象作为客户端和目标对象之间的中介，起到了保护目标对象的作用</li>
+<li>符合开闭原则</li>
+</ul>
+</li>
+</ul>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-Mediator-Pattern/">中介者模式(Mediator Pattern)</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F-Prototype-Pattern/">原型模式(Prototype Pattern)</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
