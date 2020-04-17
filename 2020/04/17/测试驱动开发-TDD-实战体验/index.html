@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>测试驱动开发(TDD)实战体验 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">测试驱动开发(TDD)实战体验</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;15:22:52</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD/">测试驱动开发(TDD)</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>在上一篇文章中写了关于TDD的理论，感兴趣的小伙伴可以去阅读一下。今天这篇文章以一个简单的例子来体验一下TDD的过程。</p>
+<h5 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h5><ul>
+<li>Java 8</li>
+<li>Junit 5</li>
+</ul>
+<h5 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h5><p>我们有这样子的一个需求：客户需要一个长方形，能够给长方形设置宽和高，并且能够计算面积</p>
+<h5 id="1-编写测试用例"><a href="#1-编写测试用例" class="headerlink" title="1.编写测试用例"></a>1.编写测试用例</h5><ul>
+<li>此时的Rectangle类如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Rectangle &#123;</span><br><span class="line"></span><br><span class="line">    private double width;</span><br><span class="line"></span><br><span class="line">    private double height;</span><br><span class="line"></span><br><span class="line">    public void setWidth(double width) &#123;</span><br><span class="line">        this.width &#x3D; width;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setHeight(double height) &#123;</span><br><span class="line">        this.height &#x3D; height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编写测试case</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class RectangleTest &#123;</span><br><span class="line"></span><br><span class="line">    @Test</span><br><span class="line">    void should_return_20_when_width_2_and_height_10() &#123;</span><br><span class="line"></span><br><span class="line">        double width &#x3D; 2;</span><br><span class="line"></span><br><span class="line">        double height &#x3D; 10;</span><br><span class="line"></span><br><span class="line">        Rectangle rectangle &#x3D; new Rectangle();</span><br><span class="line"></span><br><span class="line">        rectangle.setWidth(width);</span><br><span class="line">        rectangle.setHeight(height);</span><br><span class="line"></span><br><span class="line">        assert (rectangle.count(width, height) &#x3D;&#x3D; 20);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-运行测试用例"><a href="#2-运行测试用例" class="headerlink" title="2.运行测试用例"></a>2.运行测试用例</h5><p>就会看到测试case运行失败了（因为你还没写功能代码）</p>
+<h5 id="3-编写业务代码"><a href="#3-编写业务代码" class="headerlink" title="3.编写业务代码"></a>3.编写业务代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Rectangle &#123;</span><br><span class="line"></span><br><span class="line">    private double width;</span><br><span class="line"></span><br><span class="line">    private double height;</span><br><span class="line"></span><br><span class="line">    public void setWidth(double width) &#123;</span><br><span class="line">        this.width &#x3D; width;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setHeight(double height) &#123;</span><br><span class="line">        this.height &#x3D; height;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public double count(double width, double height) &#123;</span><br><span class="line">		 return width * height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="4-运行测试用例，然后看到测试用例通过了"><a href="#4-运行测试用例，然后看到测试用例通过了" class="headerlink" title="4.运行测试用例，然后看到测试用例通过了"></a>4.运行测试用例，然后看到测试用例通过了</h5><h5 id="5-对代码查缺补漏，进行重构"><a href="#5-对代码查缺补漏，进行重构" class="headerlink" title="5.对代码查缺补漏，进行重构"></a>5.对代码查缺补漏，进行重构</h5><ul>
+<li>补充测试用例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public class RectangleTest &#123;</span><br><span class="line"></span><br><span class="line">    @Test</span><br><span class="line">    void should_return_20_when_width_2_and_height_10() &#123;</span><br><span class="line"></span><br><span class="line">        double width &#x3D; 2;</span><br><span class="line"></span><br><span class="line">        double height &#x3D; 10;</span><br><span class="line"></span><br><span class="line">        Rectangle rectangle &#x3D; new Rectangle();</span><br><span class="line"></span><br><span class="line">        rectangle.setWidth(width);</span><br><span class="line">        rectangle.setHeight(height);</span><br><span class="line"></span><br><span class="line">        assert (rectangle.count(width, height) &#x3D;&#x3D; 20);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Test</span><br><span class="line">    void should_throw_exception_when_width_given_error_value() &#123;</span><br><span class="line"></span><br><span class="line">        double width &#x3D; -10;</span><br><span class="line"></span><br><span class="line">        double height &#x3D; 10;</span><br><span class="line"></span><br><span class="line">        Rectangle rectangle &#x3D; new Rectangle();</span><br><span class="line"></span><br><span class="line">        assertThrows(IllegalArgumentException.class, () -&gt; rectangle.count(width, height));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>运行测试用例，发现失败了</li>
+<li>然后补充代码，此时的Rectangle类如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class Rectangle &#123;</span><br><span class="line"></span><br><span class="line">    private double width;</span><br><span class="line"></span><br><span class="line">    private double height;</span><br><span class="line"></span><br><span class="line">    public void setWidth(double width) &#123;</span><br><span class="line">        this.width &#x3D; width;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setHeight(double height) &#123;</span><br><span class="line">        this.height &#x3D; height;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public double count(double width, double height) &#123;</span><br><span class="line">        if (width &lt;&#x3D; 0 || height &lt;&#x3D; 0) &#123;</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        &#125;</span><br><span class="line">        return width * height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是一个简单的TDD的用例过程，其实还是很轻松愉快的。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">测试驱动开发(TDD)在微服务中的应用</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E7%9A%84%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/">测试驱动开发(TDD)的理论基础</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
