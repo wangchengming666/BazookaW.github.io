@@ -103,6 +103,68 @@
             <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
     <article class="post-wrap">
@@ -120,12 +182,30 @@
                         </span>
                     
                     
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/">Java多线程进阶</a>
+                            
+                        </span>
+                    
                 </div>
             
         </header>
 
         <div class="post-content">
-            
+            <h5 id="CountDownLatch介绍"><a href="#CountDownLatch介绍" class="headerlink" title="CountDownLatch介绍"></a>CountDownLatch介绍</h5><p>先来解读一下CountDownLatch这个类名字的意义。CountDown代表计数递减，Latch是“门闩”的意思。也有人把它称为“屏障”。而CountDownLatch这个类的作用也很贴合这个名字的意义，假设某个线程在执行任务之前，需要等待其它线程完成一些前置任务，必须等所有的前置任务都完成，才能开始执行本线程的任务。</p>
+<p>CountDownLatch的方法也很简单，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 构造方法：</span><br><span class="line">public CountDownLatch(int count)</span><br><span class="line"></span><br><span class="line">public void await() &#x2F;&#x2F; 等待</span><br><span class="line">public boolean await(long timeout, TimeUnit unit) &#x2F;&#x2F; 超时等待</span><br><span class="line">public void countDown() &#x2F;&#x2F; count - 1</span><br><span class="line">public long getCount() &#x2F;&#x2F; 获取当前还有多少count</span><br></pre></td></tr></table></figure>
+
+<h5 id="CountDownLatch案例"><a href="#CountDownLatch案例" class="headerlink" title="CountDownLatch案例"></a>CountDownLatch案例</h5><p>我们知道，玩游戏的时候，在游戏真正开始之前，一般会等待一些前置任务完成，比如“加载地图数据”，“加载人物模型”，“加载背景音乐”等等。只有当所有的东西都加载完成后，玩家才能真正进入游戏。下面我们就来模拟一下这个demo。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">public class PhaserDemo &#123;</span><br><span class="line">    static class PreTaskThread implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">        private String task;</span><br><span class="line">        private Phaser phaser;</span><br><span class="line"></span><br><span class="line">        public PreTaskThread(String task, Phaser phaser) &#123;</span><br><span class="line">            this.task &#x3D; task;</span><br><span class="line">            this.phaser &#x3D; phaser;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            for (int i &#x3D; 1; i &lt; 4; i++) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    &#x2F;&#x2F; 第二次关卡起不加载NPC，跳过</span><br><span class="line">                    if (i &gt;&#x3D; 2 &amp;&amp; &quot;加载新手教程&quot;.equals(task)) &#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Random random &#x3D; new Random();</span><br><span class="line">                    Thread.sleep(random.nextInt(1000));</span><br><span class="line">                    System.out.println(String.format(&quot;关卡%d，需要加载%d个模块，当前模块【%s】&quot;,</span><br><span class="line">                            i, phaser.getRegisteredParties(), task));</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 从第二个关卡起，不加载NPC</span><br><span class="line">                    if (i &#x3D;&#x3D; 1 &amp;&amp; &quot;加载新手教程&quot;.equals(task)) &#123;</span><br><span class="line">                        System.out.println(&quot;下次关卡移除加载【新手教程】模块&quot;);</span><br><span class="line">                        phaser.arriveAndDeregister(); &#x2F;&#x2F; 移除一个模块</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        phaser.arriveAndAwaitAdvance();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Phaser phaser &#x3D; new Phaser(4) &#123;</span><br><span class="line">            @Override</span><br><span class="line">            protected boolean onAdvance(int phase, int registeredParties) &#123;</span><br><span class="line">                System.out.println(String.format(&quot;第%d次关卡准备完成&quot;, phase + 1));</span><br><span class="line">                return phase &#x3D;&#x3D; 3 || registeredParties &#x3D;&#x3D; 0;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        new Thread(new PreTaskThread(&quot;加载地图数据&quot;, phaser)).start();</span><br><span class="line">        new Thread(new PreTaskThread(&quot;加载人物模型&quot;, phaser)).start();</span><br><span class="line">        new Thread(new PreTaskThread(&quot;加载背景音乐&quot;, phaser)).start();</span><br><span class="line">        new Thread(new PreTaskThread(&quot;加载新手教程&quot;, phaser)).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">关卡1，需要加载4个模块，当前模块【加载背景音乐】</span><br><span class="line">关卡1，需要加载4个模块，当前模块【加载新手教程】</span><br><span class="line">下次关卡移除加载【新手教程】模块</span><br><span class="line">关卡1，需要加载3个模块，当前模块【加载地图数据】</span><br><span class="line">关卡1，需要加载3个模块，当前模块【加载人物模型】</span><br><span class="line">第1次关卡准备完成</span><br><span class="line">关卡2，需要加载3个模块，当前模块【加载地图数据】</span><br><span class="line">关卡2，需要加载3个模块，当前模块【加载背景音乐】</span><br><span class="line">关卡2，需要加载3个模块，当前模块【加载人物模型】</span><br><span class="line">第2次关卡准备完成</span><br><span class="line">关卡3，需要加载3个模块，当前模块【加载人物模型】</span><br><span class="line">关卡3，需要加载3个模块，当前模块【加载地图数据】</span><br><span class="line">关卡3，需要加载3个模块，当前模块【加载背景音乐】</span><br><span class="line">第3次关卡准备完成</span><br></pre></td></tr></table></figure>
+
+<h5 id="Phaser原理"><a href="#Phaser原理" class="headerlink" title="Phaser原理"></a>Phaser原理</h5><p>请各位看官移步<a href="https://www.jianshu.com/p/a9a713cba61a" target="_blank" rel="noopener">这里</a></p>
+
         </div>
 
         

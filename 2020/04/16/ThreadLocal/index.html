@@ -103,6 +103,68 @@
             <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
     <article class="post-wrap">
@@ -120,12 +182,58 @@
                         </span>
                     
                     
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/">Java多线程进阶</a>
+                            
+                        </span>
+                    
                 </div>
             
         </header>
 
         <div class="post-content">
-            
+            <h6 id="什么是ThreadLocal"><a href="#什么是ThreadLocal" class="headerlink" title="什么是ThreadLocal"></a>什么是ThreadLocal</h6><p>ThreadLocal提供了线程内部的局部变量，每个线程都可以通过get()和set()来对这个局部变量进行操作，但不会和其他线程的局部变量进行冲突，保证了多线程环境下数据的独立性，实现了线程的数据隔离。</p>
+<p>以下是ThreadLocal常用的API</p>
+<ul>
+<li>threadLocal.get()方法，取当前线程存放在ThreadLocal里的数据 </li>
+<li>threadLocal.set(T value)方法，设置当前线程在ThreadLocal里的数据</li>
+<li>threadLocal.remove()方法，移除当前线程在ThreadLocal里的数据</li>
+<li>threadLocal.initialValue()，返回当前线程在ThreadLocal里的初始值 </li>
+</ul>
+<h5 id="ThreadLocal的原理"><a href="#ThreadLocal的原理" class="headerlink" title="ThreadLocal的原理"></a>ThreadLocal的原理</h5><p>每个<code>Thread</code>维护一个<code>ThreadLocalMap</code>哈希表，这个哈希表的key是ThreadLocal实例本身，value才是真正要存储的值Object。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;</span><br><span class="line">    table &#x3D; new Entry[INITIAL_CAPACITY];</span><br><span class="line">    int i &#x3D; firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1);</span><br><span class="line">    table[i] &#x3D; new Entry(firstKey, firstValue);</span><br><span class="line">    size &#x3D; 1;</span><br><span class="line">    setThreshold(INITIAL_CAPACITY);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ThreadLocal的get()方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public T get() &#123;</span><br><span class="line">    &#x2F;&#x2F; 获取当前线程</span><br><span class="line">    Thread t &#x3D; Thread.currentThread();</span><br><span class="line">    &#x2F;&#x2F; 获取当前线程维护的ThreadLocalMap</span><br><span class="line">    ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">    &#x2F;&#x2F; 如果map不为空</span><br><span class="line">    if (map !&#x3D; null) &#123;</span><br><span class="line">        &#x2F;&#x2F; 则以当前的ThreadLocal为key，调用ThreadLocalMap中的getEntry方法获取对应的存储实体e。</span><br><span class="line">        &#x2F;&#x2F; 找到对应的存储实体e，获取存储实体e对应的value值，即为我们想要的当前线程对应此ThreadLocal的值，返回结果值。</span><br><span class="line">        ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">        if (e !&#x3D; null) &#123;</span><br><span class="line">            @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">            T result &#x3D; (T)e.value;</span><br><span class="line">            return result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 如果ThreadLocalMap为空，则返回一个新的ThreadLocalMap</span><br><span class="line">    return setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>setInitiaValue方法如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private T setInitialValue() &#123;</span><br><span class="line">    T value &#x3D; initialValue();</span><br><span class="line">    Thread t &#x3D; Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">    if (map !&#x3D; null)</span><br><span class="line">        map.set(this, value);</span><br><span class="line">    else</span><br><span class="line">        createMap(t, value);</span><br><span class="line">    return value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>createMap方法如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void createMap(Thread t, T firstValue) &#123;</span><br><span class="line">    t.threadLocals &#x3D; new ThreadLocalMap(this, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ThreadLocal的set()方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public void set(T value) &#123;</span><br><span class="line">    &#x2F;&#x2F; 获取当前线程</span><br><span class="line">    Thread t &#x3D; Thread.currentThread();</span><br><span class="line">    &#x2F;&#x2F; 获取当前线程维护的ThreadLocalMap</span><br><span class="line">    ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">    &#x2F;&#x2F; 如果map不为空</span><br><span class="line">    if (map !&#x3D; null)</span><br><span class="line">        &#x2F;&#x2F; 赋值</span><br><span class="line">        map.set(this, value);</span><br><span class="line">    else</span><br><span class="line">        &#x2F;&#x2F; 初始化ThreadLocalMap，并将此实体entry作为第一个值存放至ThreadLocalMap中</span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ThreadLocal的remove()方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void remove() &#123;</span><br><span class="line">    &#x2F;&#x2F; 获取当前线程维护的ThreadLocalMap</span><br><span class="line">    ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">    if (m !&#x3D; null)</span><br><span class="line">        &#x2F;&#x2F; 如果m不为空，以当前ThreadLocal为key移除</span><br><span class="line">        m.remove(this);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="ThreadLocal中的内存泄漏问题"><a href="#ThreadLocal中的内存泄漏问题" class="headerlink" title="ThreadLocal中的内存泄漏问题"></a>ThreadLocal中的内存泄漏问题</h5><p>内存泄漏的定义： 对象不再被程序使用，但是因为它们仍在被引用导致垃圾收集器无法删除它们。<br>通过源码可以发现，<code>ThreadLocalMap</code>中的存储实体<code>Entry</code>使用<code>ThreadLocal</code>作为<code>key</code>，但这个<code>Entry</code>是继承弱引用<code>WeakReference</code>的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;</span><br><span class="line">    &#x2F;** The value associated with this ThreadLocal. *&#x2F;</span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        super(k);</span><br><span class="line">        value &#x3D; v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ThreadLocalMap</code>使用<code>ThreadLocal</code>的弱引用作为<code>key</code>，如果一个<code>ThreadLocal</code>没有外部强引用来引用它，那么系统 GC 的时候，这个<code>ThreadLocal</code>势必会被回收，从而造成内存泄漏。<br>那么我们既然知道了这个问题，每次使用完ThreadLocal，都调用它的<code>remove()</code>方法，清除数据，就不会造成内存泄漏的问题啦。</p>
+
         </div>
 
         
@@ -151,8 +259,6 @@
             </div>
         </section>
         <section class="post-nav">
-            
-                <a class="prev" rel="prev" href="/2020/04/16/Future%E5%8F%8A%E5%85%B6%E6%89%A9%E5%B1%95/">Future及其扩展</a>
             
             
             <a class="next" rel="next" href="/2020/04/16/Java8%E4%B8%AD%E7%9A%84%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97/">Java8中的并行计算</a>

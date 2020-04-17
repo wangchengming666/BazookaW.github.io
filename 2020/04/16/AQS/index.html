@@ -103,6 +103,68 @@
             <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
     <article class="post-wrap">
@@ -120,12 +182,96 @@
                         </span>
                     
                     
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/">Java多线程进阶</a>
+                            
+                        </span>
+                    
                 </div>
             
         </header>
 
         <div class="post-content">
-            
+            <h5 id="AQS简介"><a href="#AQS简介" class="headerlink" title="AQS简介"></a>AQS简介</h5><p><strong>AQS</strong>是<code>AbstractQueuedSynchronizer</code>的简称，即抽象队列同步器，从字面意思上理解:</p>
+<ul>
+<li>抽象：抽象类，只实现一些主要逻辑，有些方法由子类实现；</li>
+<li>队列：使用先进先出（FIFO）队列存储数据；</li>
+<li>同步：实现了同步的功能。</li>
+</ul>
+<p>那AQS有什么用呢？AQS是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的同步器，比如我们提到的ReentrantLock，Semaphore，ReentrantReadWriteLock，SynchronousQueue，FutureTask等等皆是基于AQS的。</p>
+<p>AQS的数据结构</p>
+<p>AQS内部使用了一个volatile的变量state来作为资源的标识。同时定义了几个获取和改版state的protected方法，子类可以覆盖这些方法来实现自己的逻辑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getState()</span><br><span class="line">setState()</span><br><span class="line">compareAndSetState()</span><br></pre></td></tr></table></figure>
+
+<p>这三种叫做均是原子操作，其中compareAndSetState的实现依赖于Unsafe的compareAndSwapInt()方法。</p>
+<p>而AQS类本身实现的是一些排队和阻塞的机制，比如具体线程等待队列的维护（如获取资源失败入队/唤醒出队等）。它内部使用了一个先进先出（FIFO）的双端队列，并使用了两个指针head和tail用于标识队列的头部和尾部。其数据结构如图：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200417094244214.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>但它并不是直接储存线程，而是储存拥有线程的Node节点</p>
+<h5 id="资源共享模式"><a href="#资源共享模式" class="headerlink" title="资源共享模式"></a>资源共享模式</h5><p>资源有两种共享模式，或者说两种同步方式：</p>
+<ul>
+<li>独占模式（Exclusive）：资源是独占的，一次只能一个线程获取。如ReentrantLock。</li>
+<li>共享模式（Share）：同时可以被多个线程获取，具体的资源个数可以通过参数指定。如Semaphore/CountDownLatch。</li>
+</ul>
+<p>一般情况下，子类只需要根据需求实现其中一种模式，当然也有同时实现两种模式的同步类，如ReadWriteLock。</p>
+<p>AQS中关于这两种资源共享模式的定义源码（均在内部类Node中）。我们来看看Node的结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">static final class Node &#123;</span><br><span class="line">    &#x2F;&#x2F; 标记一个结点（对应的线程）在共享模式下等待</span><br><span class="line">    static final Node SHARED &#x3D; new Node();</span><br><span class="line">    &#x2F;&#x2F; 标记一个结点（对应的线程）在独占模式下等待</span><br><span class="line">    static final Node EXCLUSIVE &#x3D; null; </span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; waitStatus的值，表示该结点（对应的线程）已被取消</span><br><span class="line">    static final int CANCELLED &#x3D; 1; </span><br><span class="line">    &#x2F;&#x2F; waitStatus的值，表示后继结点（对应的线程）需要被唤醒</span><br><span class="line">    static final int SIGNAL &#x3D; -1;</span><br><span class="line">    &#x2F;&#x2F; waitStatus的值，表示该结点（对应的线程）在等待某一条件</span><br><span class="line">    static final int CONDITION &#x3D; -2;</span><br><span class="line">    &#x2F;*waitStatus的值，表示有资源可用，新head结点需要继续唤醒后继结点（共享模式下，多线程并发释放资源，而head唤醒其后继结点后，需要把多出来的资源留给后面的结点；设置新的head结点时，会继续唤醒其后继结点）*&#x2F;</span><br><span class="line">    static final int PROPAGATE &#x3D; -3;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 等待状态，取值范围，-3，-2，-1，0，1</span><br><span class="line">    volatile int waitStatus;</span><br><span class="line">    volatile Node prev; &#x2F;&#x2F; 前驱结点</span><br><span class="line">    volatile Node next; &#x2F;&#x2F; 后继结点</span><br><span class="line">    volatile Thread thread; &#x2F;&#x2F; 结点对应的线程</span><br><span class="line">    Node nextWaiter; &#x2F;&#x2F; 等待队列里下一个等待条件的结点</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 判断共享模式的方法</span><br><span class="line">    final boolean isShared() &#123;</span><br><span class="line">        return nextWaiter &#x3D;&#x3D; SHARED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Node(Thread thread, Node mode) &#123;     &#x2F;&#x2F; Used by addWaiter</span><br><span class="line">        this.nextWaiter &#x3D; mode;</span><br><span class="line">        this.thread &#x3D; thread;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 其它方法忽略，可以参考具体的源码</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; AQS里面的addWaiter私有方法</span><br><span class="line">private Node addWaiter(Node mode) &#123;</span><br><span class="line">    &#x2F;&#x2F; 使用了Node的这个构造函数</span><br><span class="line">    Node node &#x3D; new Node(Thread.currentThread(), mode);</span><br><span class="line">    &#x2F;&#x2F; 其它代码省略</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：通过Node我们可以实现两个队列，一是通过prev和next实现CLH队列(线程同步队列,双向队列)，二是nextWaiter实现Condition条件上的等待线程队列(单向队列)，这个Condition主要用在ReentrantLock类中。</p>
+</blockquote>
+<h5 id="AQS的主要方法源码解析"><a href="#AQS的主要方法源码解析" class="headerlink" title="AQS的主要方法源码解析"></a>AQS的主要方法源码解析</h5><p>AQS的设计是基于模板方法模式的，它有一些方法必须要子类去实现的，它们主要有：</p>
+<ul>
+<li>isHeldExclusively()：该线程是否正在独占资源。只有用到condition才需要去实现它。</li>
+<li>tryAcquire(int)：独占方式。尝试获取资源，成功则返回true，失败则返回false。</li>
+<li>tryRelease(int)：独占方式。尝试释放资源，成功则返回true，失败则返回false。</li>
+<li>tryAcquireShared(int)：共享方式。尝试获取资源。负数表示失败；0表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。</li>
+<li>tryReleaseShared(int)：共享方式。尝试释放资源，如果释放后允许唤醒后续等待结点返回true，否则返回false。</li>
+</ul>
+<p>这些方法虽然都是<code>protected</code>方法，但是它们并没有在AQS具体实现，而是直接抛出异常（虽然不知道这里为什么不使用抽象方法的实现方式）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">    throw new UnsupportedOperationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而AQS实现了一系列主要的逻辑。下面我们从源码来分析一下获取和释放资源的主要逻辑：</p>
+<p><strong>获取资源</strong></p>
+<p>获取资源的入口是acquire(int arg)方法。arg是要获取的资源的个数，在独占模式下始终为1。我们先来看看这个方法的逻辑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public final void acquire(int arg) &#123;</span><br><span class="line">    if (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先调用tryAcquire(arg)尝试去获取资源。前面提到了这个方法是在子类具体实现的。</p>
+<p>如果获取资源失败，就通过addWaiter(Node.EXCLUSIVE)方法把这个线程插入到等待队列中。其中传入的参数代表要插入的Node是独占式的。这个方法的具体实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">private Node addWaiter(Node mode) &#123;</span><br><span class="line">    &#x2F;&#x2F; 生成该线程对应的Node节点</span><br><span class="line">    Node node &#x3D; new Node(Thread.currentThread(), mode);</span><br><span class="line">    &#x2F;&#x2F; 将Node插入队列中</span><br><span class="line">    Node pred &#x3D; tail;</span><br><span class="line">    if (pred !&#x3D; null) &#123;</span><br><span class="line">        node.prev &#x3D; pred;</span><br><span class="line">        &#x2F;&#x2F; 使用CAS尝试，如果成功就返回</span><br><span class="line">        if (compareAndSetTail(pred, node)) &#123;</span><br><span class="line">            pred.next &#x3D; node;</span><br><span class="line">            return node;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 如果等待队列为空或者上述CAS失败，再自旋CAS插入</span><br><span class="line">    enq(node);</span><br><span class="line">    return node;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 自旋CAS插入等待队列</span><br><span class="line">private Node enq(final Node node) &#123;</span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        Node t &#x3D; tail;</span><br><span class="line">        if (t &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; Must initialize</span><br><span class="line">            if (compareAndSetHead(new Node()))</span><br><span class="line">                tail &#x3D; head;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            node.prev &#x3D; t;</span><br><span class="line">            if (compareAndSetTail(t, node)) &#123;</span><br><span class="line">                t.next &#x3D; node;</span><br><span class="line">                return t;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上面的两个函数比较好理解，就是在队列的尾部插入新的Node节点，但是需要注意的是由于AQS中会存在多个线程同时争夺资源的情况，因此肯定会出现多个线程同时插入节点的操作，在这里是通过CAS自旋的方式保证了操作的线程安全性。</p>
+</blockquote>
+<p>OK，现在回到最开始的aquire(int arg)方法。现在通过addWaiter方法，已经把一个Node放到等待队列尾部了。而处于等待队列的结点是从头结点一个一个去获取资源的。具体的实现我们来看看acquireQueued方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">final boolean acquireQueued(final Node node, int arg) &#123;</span><br><span class="line">    boolean failed &#x3D; true;</span><br><span class="line">    try &#123;</span><br><span class="line">        boolean interrupted &#x3D; false;</span><br><span class="line">        &#x2F;&#x2F; 自旋</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            final Node p &#x3D; node.predecessor();</span><br><span class="line">            &#x2F;&#x2F; 如果node的前驱结点p是head，表示node是第二个结点，就可以尝试去获取资源了</span><br><span class="line">            if (p &#x3D;&#x3D; head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 拿到资源后，将head指向该结点。</span><br><span class="line">                &#x2F;&#x2F; 所以head所指的结点，就是当前获取到资源的那个结点或null。</span><br><span class="line">                setHead(node); </span><br><span class="line">                p.next &#x3D; null; &#x2F;&#x2F; help GC</span><br><span class="line">                failed &#x3D; false;</span><br><span class="line">                return interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 如果自己可以休息了，就进入waiting状态，直到被unpark()</span><br><span class="line">            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted &#x3D; true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        if (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里parkAndCheckInterrupt方法内部使用到了LockSupport.park(this)，顺便简单介绍一下park。</p>
+<p>LockSupport类是Java 6 引入的一个类，提供了基本的线程同步原语。LockSupport实际上是调用了Unsafe类里的函数，归结到Unsafe里，只有两个函数：</p>
+</blockquote>
+<ul>
+<li>park(boolean isAbsolute, long time)：阻塞当前线程</li>
+<li>unpark(Thread jthread)：使给定的线程停止阻塞</li>
+</ul>
+<p>所以<strong>结点进入等待队列后，是调用park使它进入阻塞状态的。只有头结点的线程是处于活跃状态的。</strong></p>
+<p>当然，获取资源的方法除了acquire外，还有以下三个：</p>
+<ul>
+<li>acquireInterruptibly：申请可中断的资源（独占模式）</li>
+<li>acquireShared：申请共享模式的资源</li>
+<li>acquireSharedInterruptibly：申请可中断的资源（共享模式）</li>
+</ul>
+<blockquote>
+<p>可中断的意思是，在线程中断时可能会抛出InterruptedException</p>
+</blockquote>
+<p>总结起来的一个流程图：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200417095103996.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><strong>释放资源</strong></p>
+<p>释放资源相比于获取资源来说，会简单许多。在AQS中只有一小段实现。源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public final boolean release(int arg) &#123;</span><br><span class="line">    if (tryRelease(arg)) &#123;</span><br><span class="line">        Node h &#x3D; head;</span><br><span class="line">        if (h !&#x3D; null &amp;&amp; h.waitStatus !&#x3D; 0)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void unparkSuccessor(Node node) &#123;</span><br><span class="line">    &#x2F;&#x2F; 如果状态是负数，尝试把它设置为0</span><br><span class="line">    int ws &#x3D; node.waitStatus;</span><br><span class="line">    if (ws &lt; 0)</span><br><span class="line">        compareAndSetWaitStatus(node, ws, 0);</span><br><span class="line">    &#x2F;&#x2F; 得到头结点的后继结点head.next</span><br><span class="line">    Node s &#x3D; node.next;</span><br><span class="line">    &#x2F;&#x2F; 如果这个后继结点为空或者状态大于0</span><br><span class="line">    &#x2F;&#x2F; 通过前面的定义我们知道，大于0只有一种可能，就是这个结点已被取消</span><br><span class="line">    if (s &#x3D;&#x3D; null || s.waitStatus &gt; 0) &#123;</span><br><span class="line">        s &#x3D; null;</span><br><span class="line">        &#x2F;&#x2F; 等待队列中所有还有用的结点，都向前移动</span><br><span class="line">        for (Node t &#x3D; tail; t !&#x3D; null &amp;&amp; t !&#x3D; node; t &#x3D; t.prev)</span><br><span class="line">            if (t.waitStatus &lt;&#x3D; 0)</span><br><span class="line">                s &#x3D; t;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 如果后继结点不为空，</span><br><span class="line">    if (s !&#x3D; null)</span><br><span class="line">        LockSupport.unpark(s.thread);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>参考资料</strong></p>
+<p><a href="https://www.jianshu.com/p/da9d051dcc3d" target="_blank" rel="noopener">Java技术之AQS详解</a></p>
+
         </div>
 
         
@@ -152,10 +298,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/04/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E6%AD%BB%E9%94%81/">线程安全和死锁</a>
+                <a class="prev" rel="prev" href="/2020/04/16/CAS/">CAS</a>
             
             
-            <a class="next" rel="next" href="/2020/04/16/CAS/">CAS</a>
+            <a class="next" rel="next" href="/2020/04/16/Volatile/">Volatile</a>
             
         </section>
 

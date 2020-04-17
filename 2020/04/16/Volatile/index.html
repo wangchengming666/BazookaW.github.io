@@ -103,6 +103,68 @@
             <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
     <article class="post-wrap">
@@ -120,12 +182,52 @@
                         </span>
                     
                     
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%BF%9B%E9%98%B6/">Java多线程进阶</a>
+                            
+                        </span>
+                    
                 </div>
             
         </header>
 
         <div class="post-content">
-            
+            <p>在多线程并发编程中 <code>synchronized</code> 和 <code>volatile</code> 都扮演着重要的角色，<code>volatile</code> 是轻量级的 <code>synchronized</code>，它在多处理器开发中保证了共享变量的“可见性”。</p>
+<h5 id="内存可见性"><a href="#内存可见性" class="headerlink" title="内存可见性"></a>内存可见性</h5><ul>
+<li>内存可见性，指的是线程之间的可见性，当一个线程修改了共享变量时，另一个线程可以读取到这个修改后的值。</li>
+<li>所谓内存可见性，指的是当一个线程对<code>volatile</code>修饰的变量进行写操作（比如step 2）时，会立即把该线程对应的本地内存中的共享变量的值刷新到主内存；当一个线程对<code>volatile</code>修饰的变量进行读操作（比如step 3）时，会把立即该线程对应的本地内存置为无效，从主内存中读取共享变量的值。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public class VolatileDemo &#123;</span><br><span class="line">    int a &#x3D; 0;</span><br><span class="line">    volatile boolean flag &#x3D; false;</span><br><span class="line">	</span><br><span class="line">    public void writer() &#123;</span><br><span class="line">        a &#x3D; 1; &#x2F;&#x2F; step 1</span><br><span class="line">        flag &#x3D; true; &#x2F;&#x2F; step 2</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    public void reader() &#123;</span><br><span class="line">        if (flag) &#123; &#x2F;&#x2F; step 3</span><br><span class="line">            System.out.println(a); &#x2F;&#x2F; step 4</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">    VolatileDemo volatileDemo &#x3D; new VolatileDemo();</span><br><span class="line">    Thread a &#x3D; new Thread(new Runnable() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            volatileDemo.writer();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    Thread b &#x3D; new Thread(new Runnable() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            volatileDemo.reader();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    a.start();</span><br><span class="line">    b.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个时候的输出结果为：<code>1</code></p>
+<p>而如果flag变量没有用volatile修饰，在step 2，线程A的本地内存里面的变量就不会立即更新到主内存，那随后线程B也同样不会去主内存拿最新的值，仍然使用线程B本地内存缓存的变量的值a = 0，flag = false。</p>
+<h5 id="禁止重排序"><a href="#禁止重排序" class="headerlink" title="禁止重排序"></a>禁止重排序</h5><p>为优化程序性能，对原有的指令执行顺序进行优化重新排序。重排序可能发生在多个阶段，比如编译重排序、CPU重排序等。</p>
+<p>在JSR-133之前的旧的Java内存模型中，是允许volatile变量与普通变量重排序的。那上面的案例中，可能就会被重排序成下列时序来执行：</p>
+<ul>
+<li>线程A写volatile变量，step 2，设置flag为true；</li>
+<li>线程B读同一个volatile，step 3，读取到flag为true；</li>
+<li>线程B读普通变量，step 4，读取到 a = 0；</li>
+<li>线程A修改普通变量，step 1，设置 a = 1；</li>
+</ul>
+<p>可见，如果volatile变量与普通变量发生了重排序，虽然volatile变量能保证内存可见性，也可能导致普通变量读取错误。</p>
+<p>所以在旧的内存模型中，volatile的写-读就不能与锁的释放-获取具有相同的内存语义了。为了提供一种比锁更轻量级的线程间的通信机制，JSR-133专家组决定增强volatile的内存语义：严格限制编译器和处理器对volatile变量与普通变量的重排序。</p>
+<h5 id="volatile的非原子性"><a href="#volatile的非原子性" class="headerlink" title="volatile的非原子性"></a>volatile的非原子性</h5><ul>
+<li><code>volatile</code>虽然增加了实例变量在多个线程之间的可见性，但是却不具备通同步性，也就是不具备原子性。</li>
+<li>使用<code>volatile</code>关键字之后，可以强制从公共内存中读取变量的值。</li>
+<li><code>Volatile</code>只能保证对单个<code>volatile</code>变量的读/写具有原子性。<h5 id="volatile的用途"><a href="#volatile的用途" class="headerlink" title="volatile的用途"></a>volatile的用途</h5>volatile的主要使用场合是在多个线程中可以感知到实例变量被更改了，也就是多线程读取共享变量的时可以获得最新的值来使用。</li>
+</ul>
+<p>在保证内存可见性这一点上，<code>volatile</code>有着与锁相同的内存语义，所以可以作为一个“轻量级”的锁来使用。但由于<code>volatile</code>仅仅保证对单个<code>volatile</code>变量的读/写具有原子性，而锁可以保证整个临界区代码的执行具有原子性。所以在功能上，锁比<code>volatile</code>更强大；在性能上，volatile更有优势。</p>
+<p>比如我们熟悉的单例模式，其中有一种实现方式是“双重锁检查”，比如这样的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line"></span><br><span class="line">    private static volatile Singleton instance; &#x2F;&#x2F; 不使用volatile关键字</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 双重锁检验</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; 第7行</span><br><span class="line">            synchronized (Singleton.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new Singleton(); &#x2F;&#x2F; 第10行</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="synchronized和volatile对比"><a href="#synchronized和volatile对比" class="headerlink" title="synchronized和volatile对比"></a>synchronized和volatile对比</h5><ul>
+<li>volatile是线程同步的轻量级的实现，所以volatile性能比synchronized要好，并且volatile只能修饰变量，而synchronized可以修饰方法以及代码块。</li>
+<li>多线程访问volatile不会发生阻塞，而synchronized会发生阻塞。</li>
+<li>volatile能保证数据的可见性，但不能保证原子性。而synchronized可以保证原子性，也可以间接保证可见性，因为synchronized会将私有内存和公共内存中的数据做同步，所以更加推荐使用synchronized。</li>
+<li>volatile的关注点在于解决变量在多个线程之间的可见性，而synchronized的关注点在于解决多个线程之间访问资源的同步性。</li>
+</ul>
+
         </div>
 
         
@@ -152,7 +254,7 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/04/16/%E8%AE%A4%E8%AF%86%E9%87%8D%E6%8E%92%E5%BA%8F%E4%B8%8Ehappens-before/">认识重排序与happens-before</a>
+                <a class="prev" rel="prev" href="/2020/04/16/AQS/">AQS</a>
             
             
             <a class="next" rel="next" href="/2020/04/16/%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/">共享内存并发模型</a>
