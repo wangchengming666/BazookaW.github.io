@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>Spring Cloud - 网关（Spring Cloud Gateway） | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Spring Cloud - 网关（Spring Cloud Gateway）</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;14:35:27</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Spring-Cloud/">Spring Cloud</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>老王正准备下班，路过小铭的位置，发现他正在阅读Spring Cloud Gataway的<a href="https://cloud.spring.io/spring-cloud-gateway/spring-cloud-gateway.html" target="_blank" rel="noopener">官方文档</a>。</p>
+<p>看了看时间，等公交车还有一会儿，顺便就和小铭交流一下，便问道：“你在学习Spring Cloud网关吗？”</p>
+<p>小铭听到声音后转过身来，便看到老王拉了一把椅子坐下。正好自己有一些疑惑的地方，也想找人交流学习一下。</p>
+<p>“是啊，我最近不是在学习微服务这部分知识吗，现在学到网关这部分了。其实我不是特别明白，为什么我们的微服务需要网关呢？”</p>
+<h5 id="什么是网关"><a href="#什么是网关" class="headerlink" title="什么是网关"></a>什么是网关</h5><p>老王神秘一笑，说道：“我给你看两张图你就明白了。”然后在小铭的电脑上搜出了<a href="http://blog.daocloud.io/microservices-2/" target="_blank" rel="noopener">这篇文章</a>里面的两张图。</p>
+<p>“我们假设你现在要做一个电商应用，前端是移动端的APP，后端是各种微服务。那你可能某个页面需要调用多个服务的数据来展示。如果没有网关，你的系统看起来就是这个样子的：”<br><img src="https://img-blog.csdnimg.cn/20190626104854159.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>“而如果加上了网关，你的系统就会变成这个样子：”<br><img src="https://img-blog.csdnimg.cn/20190626104910398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>“嗯，这看起来是一个‘高内聚，低耦合’的思想，如果不使用网关，可能有什么坏处呢？”小铭问道。</p>
+<p>“这个其实从刚刚的第一张图你就看得出来，如果没有网关，你的客户端就会变得非常麻烦。对每一个微服务，可能都要做权限认证、负载均衡等工作；而且后端的微服务可能还使用了不同的消息通信协议；最重要的是，如果你想对微服务进行重构，比如拆分或者合并为服务器，那也必须得修改客户端，增加了复杂性。”</p>
+<h5 id="网关的技术选型"><a href="#网关的技术选型" class="headerlink" title="网关的技术选型"></a>网关的技术选型</h5><p>小铭：“那看来网关确实是至关重要，现在市面上有哪些微服务网关呢？”</p>
+<p>“我们在实现网关的时候，需要考虑到的是它的性能和可扩展性。对于现成的产品来说，NGINX Plus是一个很不错的选择，NGINX Plus 提供了一个成熟的、可扩展的、高性能 web 服务器和一个易于部署的、可配置可编程的反向代理。NGINX Plus 可以管理身份验证、访问控制、负载均衡请求、缓存响应，并提供应用程序可感知的健康检查和监控。除此之外，你还可以使用Node.js或者Netty根据自己的需求去自己写一个网关。而且Spring Cloud也提供了一些已经写好的微服务网关框架，你知道有哪些吗？”</p>
+<p>“我查了一下，好像<code>Spring Cloud Gataway</code>和<code>Netflix的Zuul</code>都挺不错的。但Netflix的套件暂停开发了，所以我现在主要在看Spring Cloud Gateway。”</p>
+<p>老王点点头，道：“是的，Netflix很多组件到停止开发了。前两天我们讨论的Hystrix也是，但是Hystrix的替代产品还在孵化中。但网关方面，Spring Cloud Gateway已经孵化完成了，可以用来替代Zuul。那你知道Spring Cloud Gateway的原理吗？”</p>
+<h5 id="Spring-Cloud-Gateway"><a href="#Spring-Cloud-Gateway" class="headerlink" title="Spring Cloud Gateway"></a>Spring Cloud Gateway</h5><p>小铭把刚刚自己正在看的官方文档打开，然后给老王看了官网文档的这个图，一边说道：“Spring Cloud Gateway是基于Spring Boot 2.0, Spring WebFlux, Reactor项目构建的，底层是Netty。它的流程其实和Zuul很相似，使用一系列的过滤器去处理请求，达到我们自己想要的定制化。”<br><img src="https://img-blog.csdnimg.cn/20190626105311740.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>老王问：“那里刚刚看完了官方文档，可以跟我总结一下它有哪些功能吗？”</p>
+<p>“Spring Cloud Gateway几乎可以满足绝大多数网关的需求。它主要有下面一些功能：”</p>
+<ul>
+<li>Predicate</li>
+</ul>
+<p>断言可以指定在什么情况下可以匹配某个路由。断言是基于Java 8提供的<code>Predicate</code>接口。Gateway（以下简称Spring Cloud Gateway为Gateway）提供了一些默认的断言。你可以在<a href="https://cloud.spring.io/spring-cloud-gateway/spring-cloud-gateway.html#gateway-request-predicates-factories" target="_blank" rel="noopener">官方文档</a>查看具体有哪些断言以及它们的用法。</p>
+<p>支持时间、Cookie、Header、Host、HTTP Method、相对路径、URL查询语句、远程IP等来做断言。比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: method_route</span><br><span class="line">        uri: https:&#x2F;&#x2F;example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Method&#x3D;GET</span><br></pre></td></tr></table></figure>
+<ul>
+<li>网关过滤器 GatewayFilter</li>
+</ul>
+<p>Gateway也提供了一些已经写好的过滤器。可以查看<a href="https://cloud.spring.io/spring-cloud-gateway/spring-cloud-gateway.html#_gatewayfilter_factories" target="_blank" rel="noopener">官方文档</a>。主要有重写request或者response的header、parameter、body、session、安全、重写路径、重试以及对熔断的一些支持。</p>
+<ul>
+<li>全局过滤器 Global Filters</li>
+</ul>
+<p>全局过滤器与网关过滤器类似，只是默认会给所有的请求都添加上全局过滤器。当然，也可以自己定义全局过滤器。过滤器的顺序可以通过<code>@Order</code>注解来指定：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">@Order(-1)</span><br><span class="line">public GlobalFilter a() &#123;</span><br><span class="line">    return (exchange, chain) -&gt; &#123;</span><br><span class="line">        log.info(&quot;first pre filter&quot;);</span><br><span class="line">        return chain.filter(exchange).then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">            log.info(&quot;third post filter&quot;);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Bean</span><br><span class="line">@Order(0)</span><br><span class="line">public GlobalFilter b() &#123;</span><br><span class="line">    return (exchange, chain) -&gt; &#123;</span><br><span class="line">        log.info(&quot;second pre filter&quot;);</span><br><span class="line">        return chain.filter(exchange).then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">            log.info(&quot;second post filter&quot;);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Bean</span><br><span class="line">@Order(1)</span><br><span class="line">public GlobalFilter c() &#123;</span><br><span class="line">    return (exchange, chain) -&gt; &#123;</span><br><span class="line">        log.info(&quot;third pre filter&quot;);</span><br><span class="line">        return chain.filter(exchange).then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">            log.info(&quot;first post filter&quot;);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>其它功能</li>
+</ul>
+<p>Gateway还提供了其它很多功能，比如说SSL方面的配置、基于netty的access log、跨域、actuator端点等等。</p>
+<p>尤其是actuator端点，它可以让我们使用HTTP请求去动态地获取、新增、删除路由。具体的使用方法和参数查看<a href="https://cloud.spring.io/spring-cloud-gateway/spring-cloud-gateway.html#_retrieving_the_routes_defined_in_the_gateway" target="_blank" rel="noopener">官方文档</a>。</p>
+<h5 id="与注册中心配合"><a href="#与注册中心配合" class="headerlink" title="与注册中心配合"></a>与注册中心配合</h5><p>老王：“嗯，上面基本上把Spring Cloud Gateway的功能总结全了。它还可以与Spring Cloud的注册中心无缝集成。”</p>
+<p>小铭接着老王的话，说道：“是的，Gateway可以很方便地与注册中心配合起来使用，默认使用Ribbon实现了负载均衡。”</p>
+<h5 id="网关本身的负载均衡"><a href="#网关本身的负载均衡" class="headerlink" title="网关本身的负载均衡"></a>网关本身的负载均衡</h5><p>说完后，小铭问道：“那所有微服务就只有一个网关，万一并发量上去了，网关承受不住怎么办？”</p>
+<p>老王笑道：“正如你上面所说，Spring Cloud Gateway底层是Netty的，它本身就能承受比较大的并发。如果还是承受不了并发量，那可以注册多个Gateway实例，然后在前面弄一个Nginx或者F5等负载均衡器。大概图是这样：”<br><img src="https://img-blog.csdnimg.cn/20190626112139446.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
+<li>如果是微服务和微服务之间的内部调用，就不需要配置网关，直接用Feign，因为Feign集成了网关和负载均衡组件，超方便。</li>
+<li>如果是外部调用微服务，比如APP或者Web程序调用微服务，还是需要配置网关的。</li>
+<li>网关优先于负载均衡。</li>
+</ul>
+<p><a href="https://github.com/BazookaW/springcloud-sample/tree/master/Gateway-sample" target="_blank" rel="noopener">源码</a><br>源码来源于<a href="https://spring.io/guides/gs/gateway/" target="_blank" rel="noopener">官网</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/Spring-Cloud-%E7%86%94%E6%96%AD%EF%BC%88Hystrix%EF%BC%89/">Spring Cloud - 熔断（Hystrix）</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/Spring-Cloud-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%92%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8%EF%BC%88OpenFeign%EF%BC%89/">Spring Cloud - 负载均衡和远程调用（OpenFeign）</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

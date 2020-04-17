@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>Spring Cloud - 熔断（Hystrix） | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Spring Cloud - 熔断（Hystrix）</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;14:35:27</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Spring-Cloud/">Spring Cloud</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h5 id="熔断"><a href="#熔断" class="headerlink" title="熔断"></a>熔断</h5><p>小铭同学最近正在学Spring Cloud，最近学到熔断这块的知识点，不是很理解，于是请教了公司的大佬老王。</p>
+<p>小铭趁空闲时间找到老王：“王哥，我最近在学习Spring Cloud，看到所有书上都说熔断是微服务必须的，可我不用熔断，系统好像也能正常工作。那为什么说它是必须的呢？”</p>
+<p>“正常工作是没问题，那发生异常了呢？某个服务挂了或者网络不通的时候会发生什么？”老王反问小铭。</p>
+<p>“让我思考一下，如果一个微服务不可用了，那调用它的微服务这个服务就会抛异常，一直到最上层。可这跟熔断又有什么关系？”小铭心中还是有一些疑惑。</p>
+<p>老王笑了笑，解释道：“可不只是抛异常怎么简单。在Java中，每一个HTTP请求都会开启一个新线程。而下游服务挂了或者网络不可达，通常线程会阻塞住，直到Timeout。你想想看，如果并发量多一点，这些阻塞的线程就会占用大量的资源，很有可能把自己本身这个微服务所在的机器资源耗尽，导致自己也挂掉。”</p>
+<p>小铭有些明白了，追问道：“那是不是最终所有上游微服务都有可能挂掉？”</p>
+<p>“是的，这也是称为<code>‘雪崩效应’</code>。最开始是一个微服务挂掉了。随着时间地推移，可能会导致整个系统都不可用。”老王一边回答，一边快速地在电脑上搜出了下面这个图：<br><img src="https://img-blog.csdnimg.cn/2019062114272964.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>“那熔断具体是怎么解决这个问题的？”小铭点点头，然后继续追问。</p>
+<p>老王见小铭似乎有些明悟，但知识点还没有串联起来，便一步一步地引导他：“那你知道Spring Cloud断路器的三种状态吗？”</p>
+<p>似乎终于到了小铭自己比较熟悉的知识点，自信地说到：“这个我知道，Spring Cloud一般使用Hystrix来做断路器。就跟电路上的闸差不多。它有三种状态：<code>关闭，开启和半开</code>。最开始是关闭状态的，这个时候所有请求都可以通过；如果错误请求达到一定的<code>阈值</code>，就会变成开启状态，就会让所有请求短路，直接返回失败的响应；一段时间后，断路器会变成半开状态，如果下一个请求成功了，就关闭断路器，反之就开启断路器。”</p>
+<p>“那这个阈值具体是什么？”</p>
+<p>“这里主要就要用到三个属性了：”小铭快速答道</p>
+<ol>
+<li>hystrix.command.default.circuitBreaker.requestVolumeThreshold（当在配置时间窗口内达到此数量的失败后，进行短路。默认20个）简言之，10s内请求失败数量达到20个，断路器就会变成打开状态。</li>
+<li>hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds（短路多久以后开始尝试是否恢复，默认5s）</li>
+<li>hystrix.command.default.circuitBreaker.errorThresholdPercentage（出错百分比阈值，当达到此阈值后，开始短路。默认50%）</li>
+</ol>
+<h5 id="资源隔离"><a href="#资源隔离" class="headerlink" title="资源隔离"></a>资源隔离</h5><p>“非常正确！你知道Hystrix的底层原理吗？”</p>
+<p>于是小铭祭出了官方的图：<br><img src="https://img-blog.csdnimg.cn/20190621144810332.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>“Hystrix主要使用的是RxJava来做异步请求，RxJava是一个异步框架，是对观察者模式的一个应用。Hystrix会把对每个微服务的请求放到线程池里面，具体分配到哪个线程池可以使用HystrixThreadPoolKey来指定”：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@HystrixCommand(threadPoolKey &#x3D; &quot;user-hello&quot;)</span><br><span class="line">String getUserHello();</span><br></pre></td></tr></table></figure>
+<p>老王继续问：“那你知道为什么要有这个key吗？它是用来干嘛的？”小铭摇了摇头，表示自己还不知道。</p>
+<p>“你看源码就知道了，Hystrix使用了一个ConcurrentHashMap来保存线程池。”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentHashMap&lt;String, HystrixThreadPool&gt; threadPools</span><br></pre></td></tr></table></figure>
+<p>小铭心中出现了一个新的问题：那为什么我们需要多个线程池呢？</p>
+<p>此时老王继续说道：“这个其实叫资源隔离。应用程序会被完全保护起来，即使依赖的一个服务出问题了，也不会影响到应用程序的其他部分。使用多个线程池就是一种资源隔离方式，也是默认的隔离方式。而且Hystrix底层是使用的RxJava，使用线程池可以让你很方便地实现异步操作。”</p>
+<p>“那除了线程池隔离，还有其它隔离方式吗？”</p>
+<p>“有的，Hystrix提供了两种隔离方式：线程池隔离和信号量（Semaphore）隔离。”</p>
+<p>“是的，线程池隔离就是上面说的那样。信号量主要起一个限流的作用。如果信号量耗尽了，它就直接走fallback流程所以也能防止雪崩。但大多数情况，我们更倾向于使用线程池。”</p>
+<h5 id="fallback"><a href="#fallback" class="headerlink" title="fallback"></a>fallback</h5><p>“刚刚你提到了一个词叫‘fallback流程’？”</p>
+<p>“是的，fallback翻译过来是<code>‘回退’</code>的意思，有时候我们也会称它<code>‘服务降级’</code>。”</p>
+<p>“那什么时候会触发fallback呢？”</p>
+<p>“其实你应该已经可以总结出来了，主要这五种情况会触发fallback：”</p>
+<ul>
+<li>执行超时</li>
+<li>执行过程抛出异常</li>
+<li>断路器打开状态</li>
+<li>线程池拒绝（池满后的拒绝策略）</li>
+<li>信号量拒绝（信号量耗完）</li>
+</ul>
+<p>“那触发fallback后会发生什么？”</p>
+<p>老王熟练的打开源码，并快速敲下了一个Demo。“这个你得看HystrixCommand这个类的源码和使用方式。”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class AuthCommand extends HystrixCommand&lt;Boolean&gt; &#123;</span><br><span class="line">  public Boolean run() &#123;</span><br><span class="line">    return authService.authenticate(user);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  protected Boolean getFallback() &#123;</span><br><span class="line">    return true;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>“我们在使用Hystrix的时候，一般是继承<code>HystrixCommand</code>这个类，重写<code>run</code>和<code>getFallback</code>这两个方法。正常情况它是走run方法的。如果发生了fallback，它就会调用getFallback方法。”</p>
+<p>小铭看着这段代码，问到：“这看起来有点麻烦，在Spring Cloud中，有更简单的使用方式吗？”</p>
+<p>“当然。在Spring Cloud中，<code>Hystrix可以和OpenFeign无缝集成</code>。OpenFeign接口上的每个方法都会被Hystrix断路器包裹（这也是一种典型的AOP实现）。你可以在注解上配置fallback方法：”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@HystrixCommand(fallbackMethod &#x3D; &quot;getByIdFallback&quot;)</span><br><span class="line">public String getById(String id) &#123;...&#125;</span><br><span class="line"></span><br><span class="line">private String getByIdFallback(String id) &#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>感觉熔断这一块的知识点差不多理通了，小铭认真道谢，回到自己的位置继续撸代码……</p>
+<h5 id="Feign中使用断路器"><a href="#Feign中使用断路器" class="headerlink" title="Feign中使用断路器"></a>Feign中使用断路器</h5><p>Feign是自带断路器的，在D版本的Spring Cloud之后，它没有默认打开。需要在配置文件中配置打开它，在配置文件加以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">feign:</span><br><span class="line">    hystrix:</span><br><span class="line">        enabled: true</span><br></pre></td></tr></table></figure>
+<p>基于service-feign工程进行改造</p>
+<ul>
+<li>实现UserClient 接口，并注入到Ioc容器中，代码如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class UserClientHystrix implements UserClient &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String sayHello(String name) &#123;</span><br><span class="line">        return &quot;sorry &quot; + name + &quot; 上游服务断开, 服务降级&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String timeOut() throws InterruptedException &#123;</span><br><span class="line">        return &quot;链接超时，服务降级&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String exception() throws Exception &#123;</span><br><span class="line">        return &quot;发生异常，服务降级&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在FeignClient的UserClient接口的注解中加上fallback的指定类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(value &#x3D; &quot;service-client&quot;, fallback &#x3D; UserClientHystrix.class)</span><br><span class="line">public interface UserClient &#123;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;&#x2F;client&quot;)</span><br><span class="line">    String sayHello(@RequestParam(value &#x3D; &quot;name&quot;) String name);</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;&#x2F;timeOut&quot;)</span><br><span class="line">    String timeOut() throws InterruptedException;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;&#x2F;exception&quot;)</span><br><span class="line">    String exception() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动<code>eureka-server</code>，然后再启动<code>service-client</code>，最后启动<code>service-feign</code>，在浏览器输入<code>http://localhost:8765/sayHello?name=Beck Wang</code>，会看如下效果</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20190621152128911.gif" alt="在这里插入图片描述"></p>
+<ul>
+<li>接下来我关掉<code>service-client</code>，就会看到如下效果：浏览器上显示了<code>sorry Beck Wang，上游服务断开, 服务降级</code>，就证明我们的熔断器起作用了，否则就会报500。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20190624150718357.gif" alt="在这里插入图片描述"></p>
+<ul>
+<li>比较常见的还有timeout，如果上游服务timeout，hystrix也是可以做出处理，首先要配置超时时间</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 设置超时时间</span><br><span class="line">feign:</span><br><span class="line">    httpclient:</span><br><span class="line">        connection-timeout: 5000</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20190624150906684.gif" alt="在这里插入图片描述"></p>
+<ul>
+<li>还有就是上游服务抛出exception，hystrix也是可以处理<br><img src="https://img-blog.csdnimg.cn/201906241509394.gif" alt="在这里插入图片描述"></li>
+<li>那么熔断之后，到底要怎么做呢？<ul>
+<li>检查日志，修好它。</li>
+<li>fallback就写你业务上可以返回的默认值</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://github.com/BazookaW/springcloud-sample/tree/master/Hystrix-sample" target="_blank" rel="noopener">源码地址</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/Spring-Cloud-%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%EF%BC%88Zipkin%EF%BC%89/">Spring Cloud - 链路追踪（Zipkin）</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/Spring-Cloud-%E7%BD%91%E5%85%B3%EF%BC%88Spring-Cloud-Gateway%EF%BC%89/">Spring Cloud - 网关（Spring Cloud Gateway）</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>MySQL中一条SQL到底是如何执行的 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">MySQL中一条SQL到底是如何执行的</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;14:17:24</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/MySQL/">MySQL</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>能够清楚的弄明白SQL的执行过程，知道每一个阶段做了什么事情，对于SQL调优是很有必要和帮助的。</p>
+<h5 id="MySQL执行一个查询的过程"><a href="#MySQL执行一个查询的过程" class="headerlink" title="MySQL执行一个查询的过程"></a>MySQL执行一个查询的过程</h5><p><img src="https://img-blog.csdnimg.cn/20190810210346986.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>图片来源于《高性能MySQL》pdf版。从图片中可以清楚的看到：</p>
+<ul>
+<li>客户端发送一条查询给服务器；</li>
+<li>服务器先检查查询缓存，如果命中了缓存，则立刻返回存储在缓存中的结果。否则进入下一阶段；</li>
+<li>服务器段进行SQL解析、预处理，在优化器生成对应的执行计划；</li>
+<li>mysql根据优化器生成的执行计划，调用存储引擎的API来执行查询；</li>
+<li>将结果返回给客户端。</li>
+</ul>
+<h5 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h5><p>负责与客户端建立连接、获取权限、位置和管理连接。主要是<code>TCP握手</code>、<code>认证你的身份</code>、<code>获取权限</code>这三个环节。</p>
+<h5 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h5><p>在解析一个查询语句之前，如果查询缓存是打开的，那么mysql会优先检查这个查询是否命中查询缓存中的数据。MySql 在执行查询时会先对查询缓存进行查询，是否之前执行过此查询，之前执行过的语句会以key-value形式，被直接缓存在内存当中key为语句，value是查询结果，查询后2种结果：</p>
+<ol>
+<li>查询缓存命中：直接返回结果（效率很高）</li>
+<li>查询缓存未命中： 继续直行后面的阶段，执行完成后，执行结果会被存入查询缓存中</li>
+<li><h5 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h5></li>
+</ol>
+<p>如果没有命中查询缓存，就要开始真正执行语句了。首先 Mysql 需要 知道你要执行什么，所以要对sql语句做解析</p>
+<ul>
+<li><p>词法分析</p>
+<ul>
+<li>你输入的是由多个字符串和空格组成的一条 SQL 语句，MySQL 需要识别出里面的字符串分别是什么，代表什么。MySQL 从你输入的”select”这个关键字识别出来，这是一个查询语句。它也要把字符串“T”识别成“表名 T”，把字符串“ID”识别成“列 ID”</li>
+</ul>
+</li>
+<li><p>语法分析</p>
+<ul>
+<li>根据词法分析的结果，语法分析器会根据语法规则，判断你输入的这SQL语句是否满足 MySQL 语法。如果你的语句不对，就会收到<code>“You have an erroin your SQL syntax”</code>的错误提醒。这个错误往往在我们写SQL出错的时候出现过，是不是很眼熟，哈哈哈。</li>
+</ul>
+</li>
+</ul>
+<h5 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h5><p>经过分析器之后，MySQL就知道你需要做什么，在执行之前还要经过优化器的处理。当语法树被认为是合法的了，并且由优化器将其转化成执行计划。一条查询可以有很多种执行方式，最后都返回相同的结果。优化器的作用就是找到这其中最好的执行计划。优化器是在表里面有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的链接顺序等等。</p>
+<h5 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h5><p>MySQL不会生成查询字节码来执行查询，MySQL生成查询的一棵指令树，然后通过存储引擎执行完成这棵指令树并返回结果。最终的执行计划包含了重构查询的全部信息。</p>
+<p>执行语句需要：</p>
+<ul>
+<li>判断你是否有查询权限有就继续执行没有就返回权限错误</li>
+<li>执行器根据表的引擎定义去掉用引擎接口（例：InnoDB）<ul>
+<li>无索引：<br>调用innoDB引擎接口取出这个表的第一行，判断ID是否等于1，如果不是则跳过，如果是则将这行存在结果集中；调用引擎接口取 ‘下一行’ 执行相同判断逻辑，直到取到表的最后一行<br>执行器将所有满足条件的行 组成的记录作为结果集返回给客户端</li>
+<li>有索引<br>与无索引逻辑差不多，第一次调用的是“取满足条件的第一行”这个接口，之后循环的是“满足条件的下一行”这个几口，接口在引擎中已经定义好。</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/MySQL%E4%B8%AD%E4%B8%80%E6%9D%A1SELECT%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/">MySQL中一条SELECT语句是如何执行的</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/MySQL%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8%E7%AD%96%E7%95%A5%E5%92%8C%E4%BC%98%E5%8C%96/">MySQL索引使用策略和优化</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

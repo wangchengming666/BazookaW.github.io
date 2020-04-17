@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>Mysql的并发控制 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Mysql的并发控制</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;14:17:28</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/MySQL/">MySQL</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h5 id="Mysql的逻辑架构"><a href="#Mysql的逻辑架构" class="headerlink" title="Mysql的逻辑架构"></a>Mysql的逻辑架构</h5><p>Mysql的逻辑架构如下图：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190804170458874.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>最上层是处理客户端过来的连接的。主要做连接处理、授权认证、安全等。Mysql在这一层维护了一个线程池，用于处理来自客户端的连接。</p>
+<p>第二层由三部分组成：查询缓存、解析器、优化器。解析器用来解析SQL语句，优化器会对解析之后的语句进行优化。在解析查询前，服务器会先检查查询缓存，如果能在其中找到对应的查询结果，则无需再进行查询解析、优化等过程，直接返回查询结果。存储过程、触发器、视图等都在这一层实现。</p>
+<p>第三层是存储引擎，存储引擎负责在MySQL中存储数据、提取数据、开启一个事务等等。存储引擎通过API与上层进行通信，这些API屏蔽了不同存储引擎之间的差异，使得这些差异对上层查询过程透明。存储引擎不会去解析SQL。</p>
+<blockquote>
+<p>Mysql最常用的存储引擎是InnoDB</p>
+</blockquote>
+<h5 id="Mysql的并发控制"><a href="#Mysql的并发控制" class="headerlink" title="Mysql的并发控制"></a>Mysql的并发控制</h5><ul>
+<li>读写锁</li>
+</ul>
+<p>如果多个线程都只是读数据，其实可以一起读，不会互相影响，这个时候应该使用“读锁”，也称为共享锁。获取读锁的线程之间互相不会阻塞，可以同时读取一个资源。</p>
+<p>如果有一个线程需要写数据，则应该使用“写锁”，也成为排它锁。写锁会阻塞其它的写锁和读锁，直至写操作完成。</p>
+<ul>
+<li>锁粒度</li>
+</ul>
+<p>首先明确一个概念：在给定的资源上，需要加锁的数据越少，系统能够承载的并发量就越高。但加锁也是需要消耗资源的，如果系统花费大量的时间来管理锁，而不是存取数据，那么系统的性能可能会因此受影响。</p>
+<p>所以一个好的“锁策略”就是要在锁的开销和数据的安全性之间寻求平衡，Mysql支持多个存储引擎的架构，每种存储引擎都可以实现自己的锁策略和锁粒度。</p>
+<ul>
+<li>表锁和行锁</li>
+</ul>
+<p>表锁顾名思义就是锁住整张表。表锁开销比较小。对表加写锁后，其它用户对这张表的所有读写操作都会被阻塞。在Mysql中，尽管存储引擎可以提供自己的锁，但Mysql有时候也会使用表锁，比如<code>ALTER TABLE</code>之类的语句。</p>
+<blockquote>
+<p>写锁比读锁有更高的优先级，因此一个写锁请求可能会被插入到读锁队列的前面。</p>
+</blockquote>
+<p>行级锁即锁住整行，可以最大程度地支持并发处理，但加解锁的开销也会比较大。行级锁只在储存引擎层实现，所有的存储引擎都以自己的方式实现了行级锁。</p>
+<h5 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h5><p>MVCC即“多版本并发控制”，可以认为MVCC是行级锁的一个变种，但是它在很多情况下避免了加锁操作，因此开销更低。</p>
+<p>主流的关系型数据库都实现了MVCC，但实现机制各有不同。实际上MVCC也没有一个统一的标准。但大都实现了非阻塞的读操作，写操作也只是锁定必要的行。</p>
+<p>MVCC保证的是每个事务里面在执行期间看到的数据都是一致的。但不同的事务由于开始的时间不同，所以可能对同一张表，同一时刻看到的数据是不一样的。</p>
+<p>在Mysql的InnoDB引擎，是通过给每行记录后面保存两个隐藏的列来实现的。一个是保存行的创建时间，另一个保存了行的过期时间（或删除时间）。</p>
+<blockquote>
+<p>实际上存储的并不是实际的一个时间戳，而是“系统版本号”。</p>
+</blockquote>
+<p>每次开启一个事务，系统版本号都会递增。事务开始时，系统版本号会作为事务的版本号，用来和查询到的行的版本号进行比较。下面分别介绍常见的CRUD操作中版本号是怎么工作的：</p>
+<ul>
+<li>INSERT</li>
+</ul>
+<p>保存当前系统版本号作为行版本号</p>
+<ul>
+<li>DELETE</li>
+</ul>
+<p>保存当前的系统版本号到这行数据的“删除版本”。</p>
+<ul>
+<li>UPDATE</li>
+</ul>
+<p>插入一行新纪录，保存当前系统版本号作为行版本号，同时保存当前系统版本号到原来的行的“删除版本”。</p>
+<ul>
+<li><p>SELECT</p>
+<ul>
+<li>只查找版本早于当前事务版本的行。这样可以保证事务读取都的行，要么之前就存在，要么是这个事务本身自己插入或者修改的。</li>
+<li>行的“删除版本”要么未定义，要么大于当前事务版本号。这样可以确保事务读取到的行，在事务之前没有被删除。</li>
+</ul>
+</li>
+</ul>
+<p>MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作，其它两个隔离级别不能工作。因为READ UNCOMMITTED总是读取最新的数据防，而不是符合当前事务版本的数据行。而SERIALIZABLE则会对所有读取的行都加锁。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/Spring-Cloud%E4%BB%8B%E7%BB%8D/">Spring Cloud介绍</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/MySQL%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">MySQL查询优化</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

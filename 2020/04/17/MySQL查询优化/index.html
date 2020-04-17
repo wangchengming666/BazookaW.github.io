@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>MySQL查询优化 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">MySQL查询优化</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;14:17:25</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/MySQL/">MySQL</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h5 id="为什么查询会慢？"><a href="#为什么查询会慢？" class="headerlink" title="为什么查询会慢？"></a>为什么查询会慢？</h5><p>查询慢的原因可能很多，比如网络原因、锁争用等等。但最基本的原因可能是访问的数据太多。要么可能访问了太多的行，要么可能访问了太多的列，要么可能MySQL在查询的时候需要分析大量超过需要的行。</p>
+<h5 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h5><p>一个查询根据不同的场景，一般可以通过下面的方式来进行优化：</p>
+<ul>
+<li>使用COUNT *</li>
+</ul>
+<p>在使用COUNT统计行数时，<code>COUNT(*)</code>是性能最高的。</p>
+<ul>
+<li>使用LIMIT</li>
+</ul>
+<p>有时候查询并不需要返回所有的结果集，这时候可以加LIMIT限制返回多少。这在分页的场景下很常见。</p>
+<p>MySQL在进行UNION操作的时候，如果把LIMIT写在外查询里，会先将两个子查询的所有数据放在临时表，然后取前xx行。这样性能其实是比较低的，更推荐的做法是把LIMIT同时也到子查询里。</p>
+<p>有时候可以使用<code>LIMIT 1</code>来代替<code>MIN</code>和<code>MAX</code>函数。因为这两个函数需要全表扫描。</p>
+<ul>
+<li>不要查询所有列</li>
+</ul>
+<p>有时候为了方便，会直接写<code>SELECT *</code>来查询所有列的数据。但可能使用的时候不一定要使用到所有列。这个时候可以只查询部分需要用到的列。</p>
+<p>但有时候可能也有例外，因为这样做确实可以简化开发，而且有时候应用程序里面可能会有缓存机制，这样多个查询可能可以复用这个缓存。</p>
+<ul>
+<li>经常查询的列建立索引</li>
+</ul>
+<p>在前面的文章《MySQL索引原理》《MySQL索引使用策略和优化》中，我们介绍了MySQL的索引。在经常查询的列上面建立索引，可以让MySQL尽可能地扫描少的行。</p>
+<p>但这里也需要注意，维护索引是有代价的，所以需要自己去权衡时候使用索引。还有一点就是MySQL的索引是基于“最左匹配”原则的。详情可以参考之前的文章。</p>
+<ul>
+<li>分解复杂查询</li>
+</ul>
+<p>有时候一个复杂查询可能会“很大”，需要扫描许多行，关联很多表。这个时候可以把它分解成很多个小的查询。这样做有很多好处：</p>
+<pre><code>1.让缓存的效率更高
+2.执行单个查询可以减少锁的竞争
+3.更容易对数据库进行拆分
+4.减少冗余记录的查询：有时候关联查询可能会重复查询同样的数据行。</code></pre><p>当然，分解后也会带来弊端，就是发生的查询数量多了，MySQL的连接数就多了，可能会带来网络上的一些开销。但MySQL一般是放在内网的，网络一般会很快，所以不会有太大的影响。</p>
+<ul>
+<li>反范式设计数据表</li>
+</ul>
+<p>在设计数据表的时候，为了性能上的优化，可以反范式地设计表。这样可以减小表的关联，加快查询的速度。</p>
+<ul>
+<li>使用IN</li>
+</ul>
+<p>MySQL在查询的时候使用<code>IN()</code>时，会先将IN列表中的数据进行排序，然后通过二分查找的方式来确定列表中的值时候满足条件，这是一个O(log n)复杂度的操作，而如果是OR的话，复杂度是O(n)，所以如果对IN列表中有大量取值的时候，使用IN会更快一些。</p>
+<p>但尽量不要使用IN加子查询。因为MySQL会将相关的外层表压到子查询中，效率很低。如果是需要用到IN加子查询的时候，建议使用<code>EXISTS()</code>等效查询来做。</p>
+<ul>
+<li>不使用OFFSET</li>
+</ul>
+<p>OFFSET在分页的时候很常见。一旦页码过大，OFFSET和导致MySQL扫描大量不需要的行然后丢掉。那如何解决这个问题呢？有两种方式。</p>
+<p>第一种方式是从前端就限制了用户不能直接访问太大的页码。比如百度搜索结果下面的分页，限制了用户很难访问到很大的页码。</p>
+<p>第二种方式是使用主键来辅助。比如上一页返回的id的1000，那下一页就可以直接WHERE查找id大于1000且小于1020。这样查的时候就可以不用OFFSET了，MySQL也只需要扫描很少的行。但这样有一个弊端，就是有些数据可能被删掉了，那每页的范围和数量就不太好控制。</p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>总的来说，主要是针对MySQL本身的查询流程和引擎实现来做优化。但实际我们开发程序的时候，在应用层可以做缓存来优化性能，这样可以大大减少MySQL的请求和查询次数。</p>
+<p>另一方面，MySQL的索引非常重要，理解索引的原理，创建合适的索引可以极大地提升查询的性能。使用索引的主要好处就是可以在查询的时候扫描更少的行。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/Mysql%E7%9A%84%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/">Mysql的并发控制</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/MySQL%E8%AF%AD%E5%8F%A5%E4%BC%98%E5%8C%96%E5%88%A9%E5%99%A8EXPLAIN/">MySQL语句优化利器EXPLAIN</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
