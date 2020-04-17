@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>Spring Boot集成rabbitMQ实现消息推送 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Spring Boot集成rabbitMQ实现消息推送</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;15:11:44</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Spring-Spring-Boot/">Spring/Spring Boot</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h5><ul>
+<li>Spring Boot集成rabbitMQ实现消息推送，rabbitMQ为异步消息处理提出了一个很好的解决方案，它是一个非常好用的消息中间件。主要解决当生产者大量产生数据时，消费者无法快速消费的问题。这个时候需要一个中间层，保存这个数据，rabbitMQ是一个很好的解决方案。</li>
+<li>Spring Boot为rabbitMQ提供了支持, Spring Boot为rabbitMQ准备了spring-boot-starter-amqp，并且为RabbitTemplate和rabbitMQ提供了自动配置选项。</li>
+<li>AMQP协议，即Advanced Message Queuing Protocol，高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。消息中间件主要用于组件之间的解耦，消息的发送者无需知道消息使用者的存在，反之亦然。AMQP的主要特征是面向消息、队列、路由（包括点对点和发布/订阅）、可靠性、安全。</li>
+</ul>
+<h5 id="安装rabbitMQ"><a href="#安装rabbitMQ" class="headerlink" title="安装rabbitMQ"></a>安装rabbitMQ</h5><ul>
+<li><p>安装brew<br><code>ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</code></p>
+</li>
+<li><p>安装rabbitmq<br><code>brew install rabbitmq</code></p>
+</li>
+<li><p>启动rabbitmq server<br>  <code>cd /usr/local/sbin/</code><br>  <code>sudo ./rabbitmq-server</code></p>
+</li>
+<li><p>成功示例，端口是5672</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20190917154932979.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h5><ul>
+<li>通常我们谈到队列服务, 会有三个概念：发消息者、队列、收消息者，RabbitMQ在这个基本概念之上, 多做了一层抽象, 在发消息者和队列之间, 加入了交换器 (Exchange)。这样发消息者和队列就没有直接联系, 转而变成发消息者把消息给交换器, 交换器根据调度策略再把消息再给队列。<br><img src="https://img-blog.csdnimg.cn/20190917155030387.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>Broker：简单来说就是消息队列服务器实体。</li>
+<li>Exchange：消息交换机，它指定消息按什么规则，路由到哪个队列。</li>
+<li>Queue：消息队列载体，每个消息都会被投入到一个或多个队列。</li>
+<li>Binding：绑定，它的作用就是把exchange和queue按照路由规则绑定起来。</li>
+<li>Routing Key：路由关键字，exchange根据这个关键字进行消息投递。</li>
+<li>Producer：消息生产者，就是投递消息的程序。</li>
+<li>Consumer：消息消费者，就是接受消息的程序。</li>
+<li>Channel：消息通道，在客户端的每个连接里，可建立多个channel，每个channel代表一个会话任务。</li>
+</ul>
+<h5 id="基本使用过程"><a href="#基本使用过程" class="headerlink" title="基本使用过程"></a>基本使用过程</h5><ul>
+<li>客户端连接到消息队列服务器，打开一个channel。</li>
+<li>客户端声明一个exchange，并设置相关属性。</li>
+<li>客户端声明一个queue，并设置相关属性。</li>
+<li>客户端使用routing key，在exchange和queue之间建立好绑定关系。</li>
+<li>客户端投递消息到exchange。</li>
+<li>exchange接收到消息后，就根据消息的key和已经设置的binding，进行消息路由，将消息投递到一个或多个队列里。<br><img src="https://img-blog.csdnimg.cn/20190917155125563.jpg" alt="在这里插入图片描述"><h5 id="Exchange四种类型"><a href="#Exchange四种类型" class="headerlink" title="Exchange四种类型"></a>Exchange四种类型</h5></li>
+<li>Direct模式（常用）<ul>
+<li>Direct exchange完全根据key进行投递，只有key与绑定时的routing-key完全一致的消息才会收到消息。</li>
+</ul>
+</li>
+<li>Topic模式（常用）<ul>
+<li>Topic exchange会根据key进行模式匹配然后进行投递，与设置的routing-key匹配上的队列才能收到消息。</li>
+</ul>
+</li>
+<li>Fanout模式<ul>
+<li>每个发到fanout类型交换器的消息都会分到所有绑定的队列上去。fanout交换器不处理路由键，只是简单的将队列绑定到交换器上，每个发送到交换器的消息都会被转发到与该交换器绑定的所有队列上。</li>
+</ul>
+</li>
+<li>Header模式（不常用）<ul>
+<li>不太常用，可以自定义匹配规则。</li>
+</ul>
+</li>
+</ul>
+<h5 id="消息持久化"><a href="#消息持久化" class="headerlink" title="消息持久化"></a>消息持久化</h5><ul>
+<li>RabbitMQ支持消息的持久化，即将消息数据持久化到磁盘上，如果消息服务器中途断开，下次开启会将持久化的消息重新发送。</li>
+<li>声明交换机Exchange的时候设置 durable=true<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public TopicExchange exchange() &#123;</span><br><span class="line">      return new TopicExchange(EXCHANGE_NAME,true,false);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+<li>队列的持久化<ul>
+<li>声明队列Queue的时候设置 durable=true<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public Queue queue() &#123;</span><br><span class="line">    &#x2F;&#x2F;durable：是否将队列持久化 true表示需要持久化 false表示不需要持久化</span><br><span class="line">    return new Queue(QUEUE_NAME, false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>消息的持久化<ul>
+<li>发送消息的时候设置消息的 deliveryMode = 2<br><code>new MessageProperties() --&gt; DEFAULT_DELIVERY_MODE = MessageDeliveryMode.PERSISTENT --&gt; deliveryMode = 2;</code><ul>
+<li>出于数据安全考虑，一般消息都会进行持久化。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="保证MQ消息的幂等性"><a href="#保证MQ消息的幂等性" class="headerlink" title="保证MQ消息的幂等性"></a>保证MQ消息的幂等性</h5><ul>
+<li>mq内部会为每条消息生成一个全局唯一、与业务无关的消息id，当mq接收到消息时，会先根据该id判断消息是否重复发送，mq再决定是否接收该消息。<ul>
+<li>Java自带的UUID</li>
+<li>Twitter Snowflake</li>
+</ul>
+</li>
+<li>利用MySQL的唯一索引UNIQUE KEY，如果重复了，数据就会插入失败。</li>
+</ul>
+<p><strong>代码都放在<a href="https://github.com/BazookaW/spring-boot-rabbitMQ/tree/master/spring_boot_rabbitMQ" target="_blank" rel="noopener">这里</a></strong></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E4%B8%80%E6%96%87%E6%90%9E%E6%87%82Spring%E4%B8%AD%E7%9A%84%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86/">一文搞懂Spring中的事务管理</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E4%BD%BF%E7%94%A8Spring-Retry/">在微服务中使用Spring-Retry</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

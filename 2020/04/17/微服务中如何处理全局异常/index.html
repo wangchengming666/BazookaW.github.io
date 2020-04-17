@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>微服务中如何处理全局异常 | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">微服务中如何处理全局异常</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;15:02:43</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>微服务中，全局异常处理是一个必须解决的客观课题，如果这些异常处理不好的话，就会给用户看到一些不友好的错误信息，比如客户看到了空指针异常，SQL执行错误等异常，客户肯定是看不懂的，从而大大降低用户体验。</p>
+<h5 id="全局异常处理的常见解决方案"><a href="#全局异常处理的常见解决方案" class="headerlink" title="全局异常处理的常见解决方案"></a>全局异常处理的常见解决方案</h5><ul>
+<li>定义一个处理异常的类，需要处理异常的Controller直接继承这个类，从而获取到异常处理的方法。虽然这种方式可以解决问题，但是极其不灵活，因为动用了继承机制就只为获取一个默认的方法，这显然是不好的。</li>
+<li>将这个基类变为接口，提供此方法的默认实现（也就是接口中的default方法，java8开始支持接口方法的默认实现），几乎所有的Controller都需要进行异常处理，所以Controller都需要去写implement  XXXException，这个方法显然看起来不是很好。况且这种方式依赖java8才有的语法，这是一个很大的局限。</li>
+<li>使用<code>@controllerAdvice + @ExpectionHandler</code>，接下来就以这种方式来实现一些全局异常处理。<code>@ControllerAdvice</code>作为Spring中默认的注解，提供对所有（你的项目包扫描范围内）Controller的异常捕获功能。</li>
+</ul>
+<h5 id="定义默认返回实体"><a href="#定义默认返回实体" class="headerlink" title="定义默认返回实体"></a>定义默认返回实体</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class JsonEntity&lt;T&gt; implements java.io.Serializable &#123;</span><br><span class="line">    private static final long serialVersionUID &#x3D; -1771426378340695807L;</span><br><span class="line">    T data;</span><br><span class="line">    private int status &#x3D; 200;</span><br><span class="line">    private String message;</span><br><span class="line"></span><br><span class="line">    public JsonEntity() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public JsonEntity(T data) &#123;</span><br><span class="line">        this.data &#x3D; data;</span><br><span class="line">    &#125;</span><br><span class="line">	&#x2F;&#x2F; 省略getter&#x2F;setter</span><br><span class="line">	</span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;JsonEntity&#123;&quot; +</span><br><span class="line">               &quot;status&#x3D;&quot; + status +</span><br><span class="line">               &quot;, message&#x3D;&#39;&quot; + message + &#39;\&#39;&#39; +</span><br><span class="line">               &quot;, data&#x3D;&quot; + data +</span><br><span class="line">               &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="定义ExceptionResponse，当发生异常时返回的实体，放在JsonEntity的data里"><a href="#定义ExceptionResponse，当发生异常时返回的实体，放在JsonEntity的data里" class="headerlink" title="定义ExceptionResponse，当发生异常时返回的实体，放在JsonEntity的data里"></a>定义ExceptionResponse，当发生异常时返回的实体，放在JsonEntity的data里</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class ExceptionResponse implements Serializable &#123;</span><br><span class="line">    private static final long serialVersionUID &#x3D; -5599209786899732586L;</span><br><span class="line">    private String errorMessage;</span><br><span class="line">    private String classType;</span><br><span class="line">	&#x2F;&#x2F; 省略getter&#x2F;setter</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="定义BaseException，继承RuntimeException"><a href="#定义BaseException，继承RuntimeException" class="headerlink" title="定义BaseException，继承RuntimeException"></a>定义BaseException，继承RuntimeException</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">@Slf4j</span><br><span class="line">public abstract class BaseException extends RuntimeException implements Serializable &#123;</span><br><span class="line">    private static final long serialVersionUID &#x3D; 5047454682872098494L;</span><br><span class="line">    private int responseStatus &#x3D; HttpStatus.INTERNAL_SERVER_ERROR.value();</span><br><span class="line">    private Object[] parameters &#x3D; null;</span><br><span class="line">    private Logger logger &#x3D; LoggerFactory.getLogger(BaseException.class);</span><br><span class="line"></span><br><span class="line">    public BaseException() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException(String message) &#123;</span><br><span class="line">        super(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException(String message, Throwable cause) &#123;</span><br><span class="line">        super(message, cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException(Throwable cause) &#123;</span><br><span class="line">        super(cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) &#123;</span><br><span class="line">        super(message, cause, enableSuppression, writableStackTrace);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException(Object[] parameters) &#123;</span><br><span class="line">        this.parameters &#x3D; parameters;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException(String message, Object[] parameters) &#123;</span><br><span class="line">        super(message);</span><br><span class="line">        this.parameters &#x3D; parameters;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int determineResponseStatus(Throwable throwable) &#123;</span><br><span class="line">        if (throwable instanceof BaseException) &#123;</span><br><span class="line">            return ((BaseException) throwable).responseStatus();</span><br><span class="line">        &#125;</span><br><span class="line">        return HttpStatus.INTERNAL_SERVER_ERROR.value();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int determineResponseStatus(Throwable throwable, int defaultValue) &#123;</span><br><span class="line">        if (throwable &#x3D;&#x3D; null) &#123;</span><br><span class="line">            return defaultValue;</span><br><span class="line">        &#125;</span><br><span class="line">        return determineResponseStatus(throwable);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BaseException responseStatus(int responseStatus) &#123;</span><br><span class="line">        this.responseStatus &#x3D; responseStatus;</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int responseStatus() &#123;</span><br><span class="line">        return responseStatus;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getMessage(String fmt) &#123;</span><br><span class="line">        if (ObjectUtil.isEmpty(parameters)) &#123;&#x2F;&#x2F;NOPMD</span><br><span class="line">            return fmt;</span><br><span class="line">        &#125;</span><br><span class="line">        return String.format(fmt, parameters);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getMessage() &#123;</span><br><span class="line">        return (super.getMessage() &#x3D;&#x3D; null ? &quot;&quot; : super.getMessage()) + formatParameters();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getLocalizedMessage() &#123;</span><br><span class="line">        return getLocalizedMessage(LocaleContextHolder.getLocale());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getLocalizedMessage(Locale locale) &#123;</span><br><span class="line">        Assert.notNull(locale);</span><br><span class="line">        return getFromMessageSource(super.getMessage(), parameters, locale);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private String getFromMessageSource(String messageCode, Object[] params, Locale locale) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            MessageSource messageSource &#x3D; SpringContextHelper.afterSpringFullyStarted().getBeanSilently(MessageSource.class);</span><br><span class="line">            if (messageSource !&#x3D; null) &#123;</span><br><span class="line">                return messageSource.getMessage(messageCode, params, locale);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            logger.trace(&quot;error: &#123;&#125;, fallback to non-localized code, code: &#123;&#125;&quot;, e.getMessage(), messageCode);</span><br><span class="line">        &#125;</span><br><span class="line">        logger.trace(&quot;messageSource absent, fallback to non-localized message, code: &#123;&#125;&quot;, messageCode);</span><br><span class="line">        return getMessage();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private String formatParameters() &#123;</span><br><span class="line">        StringBuffer sb &#x3D; new StringBuffer();</span><br><span class="line">        if (!isEmpty(parameters)) &#123;</span><br><span class="line">            sb.append(&quot; [params: &quot;);</span><br><span class="line">            for (int i &#x3D; 0; i &lt; parameters.length; i++) &#123;</span><br><span class="line">                sb.append(i).append(&quot;:&quot;).append(parameters[i]);</span><br><span class="line">                if (i &lt; parameters.length - 1) &#123;</span><br><span class="line">                    sb.append(&quot;, &quot;);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            sb.append(&quot;] &quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Object[] getParameters() &#123;</span><br><span class="line">        return parameters;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void throwIf(boolean condition) &#123;</span><br><span class="line">        if (condition) &#123;</span><br><span class="line">            throw this;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="定义BizException，继承BaseException用来处理业务异常"><a href="#定义BizException，继承BaseException用来处理业务异常" class="headerlink" title="定义BizException，继承BaseException用来处理业务异常"></a>定义BizException，继承BaseException用来处理业务异常</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">public class BizException extends BaseException &#123;</span><br><span class="line">    private static final long serialVersionUID &#x3D; 4328407468288938158L;</span><br><span class="line"></span><br><span class="line">    public BizException() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(String message) &#123;</span><br><span class="line">        super(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(String message, int status) &#123;</span><br><span class="line">        super(message);</span><br><span class="line">        this.responseStatus(status);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(String message, Throwable cause) &#123;</span><br><span class="line">        super(message, cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(String message, Throwable cause, int status) &#123;</span><br><span class="line">        super(message, cause);</span><br><span class="line">        this.responseStatus(status);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(Throwable cause) &#123;</span><br><span class="line">        super(cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(Throwable cause, int status) &#123;</span><br><span class="line">        super(cause);</span><br><span class="line">        this.responseStatus(status);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) &#123;</span><br><span class="line">        super(message, cause, enableSuppression, writableStackTrace);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(Object[] params) &#123;</span><br><span class="line">        super(params);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public BizException(String message, Object[] params) &#123;</span><br><span class="line">        super(message, params);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static BaseException ofMessage(String message) &#123;</span><br><span class="line">        return new BizException(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="定义GlobalExceptionHandler，并使用-ControllerAdvice"><a href="#定义GlobalExceptionHandler，并使用-ControllerAdvice" class="headerlink" title="定义GlobalExceptionHandler，并使用@ControllerAdvice"></a>定义GlobalExceptionHandler，并使用<code>@ControllerAdvice</code></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line">@Controller</span><br><span class="line">@ControllerAdvice</span><br><span class="line">public class GlobalExceptionHandler &#123;</span><br><span class="line">    private static Logger log &#x3D; LoggerFactory.getLogger(GlobalExceptionHandler.class);</span><br><span class="line"></span><br><span class="line">    @Autowired(required &#x3D; false)</span><br><span class="line">    private ResponseStatusExceptionResolver responseStatusExceptionResolver;</span><br><span class="line"></span><br><span class="line">    @Autowired(required &#x3D; false)</span><br><span class="line">    private DefaultHandlerExceptionResolver defaultHandlerExceptionResolver;</span><br><span class="line"></span><br><span class="line">    @PostConstruct</span><br><span class="line">    public final void postInit() &#123;</span><br><span class="line">        if (responseStatusExceptionResolver &#x3D;&#x3D; null) &#123;</span><br><span class="line">            responseStatusExceptionResolver &#x3D; new ResponseStatusExceptionResolver();</span><br><span class="line">        &#125;</span><br><span class="line">        if (defaultHandlerExceptionResolver &#x3D;&#x3D; null) &#123;</span><br><span class="line">            defaultHandlerExceptionResolver &#x3D; new DefaultHandlerExceptionResolver();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    protected ResponseEntity jsonResponse(HttpServletRequest request, HttpServletResponse response, int status, Exception e) &#123;&#x2F;&#x2F;NOPMD</span><br><span class="line">        JsonEntity&lt;ExceptionResponse&gt; resp &#x3D; ResponseHelper.createInstance(ExceptionUtil.getExceptionResponse(request, e));</span><br><span class="line">        resp.setStatus(status);</span><br><span class="line">        resp.setMessage(ExceptionUtil.getErrorMessage(e));</span><br><span class="line">        return new ResponseEntity&lt;&gt;(resp, HttpStatus.valueOf(status));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @ExceptionHandler(value &#x3D; Exception.class)</span><br><span class="line">    @Order(Ordered.LOWEST_PRECEDENCE)</span><br><span class="line">    public final Object defaultErrorHandler(HttpServletRequest req, HttpServletResponse response, @Nullable Object handler, Exception e) &#123;</span><br><span class="line">        if (e instanceof InternalHttpException) &#123;</span><br><span class="line">            log.warn(e.getMessage());</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            log.error(e.getMessage(), e);</span><br><span class="line">        &#125;</span><br><span class="line">        ErrorWrapperResponse wrapperResponse &#x3D; new ErrorWrapperResponse(response);</span><br><span class="line"></span><br><span class="line">        ModelAndView modelAndView &#x3D; responseStatusExceptionResolver.resolveException(req, wrapperResponse, handler, e);</span><br><span class="line">        if (modelAndView &#x3D;&#x3D; null) &#123;</span><br><span class="line">            modelAndView &#x3D; defaultHandlerExceptionResolver.resolveException(req, wrapperResponse, handler, e);</span><br><span class="line">        &#125;</span><br><span class="line">        int status;</span><br><span class="line"></span><br><span class="line">        if (modelAndView &#x3D;&#x3D; null) &#123;</span><br><span class="line">            if (e instanceof BaseException) &#123;</span><br><span class="line">                status &#x3D; ((BaseException) e).responseStatus();</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                status &#x3D; HttpStatus.INTERNAL_SERVER_ERROR.value();</span><br><span class="line">            &#125;</span><br><span class="line">            modelAndView &#x3D; new ModelAndView();</span><br><span class="line">            req.setAttribute(&quot;javax.servlet.error.exception&quot;, e);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            status &#x3D; wrapperResponse.getStatus();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (WebUtil.isAjax(req)) &#123;</span><br><span class="line">            return jsonResponse(req, response, status, e);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return htmlResponse(req, response, modelAndView, status, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Object htmlResponse(HttpServletRequest request, HttpServletResponse response, ModelAndView modelAndView, int status, Exception e) &#123;&#x2F;&#x2F;NOPMD</span><br><span class="line">        modelAndView.addObject(&quot;requestId&quot;, WebUtil.getRequestId());</span><br><span class="line">        modelAndView.addObject(&quot;javax.servlet.error.exception&quot;, e);</span><br><span class="line">        modelAndView.addObject(&quot;errorStatus&quot;, status);</span><br><span class="line">        modelAndView.setStatus(HttpStatus.valueOf(status));</span><br><span class="line">        switch (status) &#123;</span><br><span class="line">            case 400:</span><br><span class="line">            case 401:</span><br><span class="line">            case 403:</span><br><span class="line">            case 404:</span><br><span class="line">            case 405:</span><br><span class="line">            case 410:</span><br><span class="line">            case 415:</span><br><span class="line">            case 500:</span><br><span class="line">                modelAndView.setViewName(&quot;error&#x2F;&quot; + status);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                modelAndView.setViewName(&quot;error&#x2F;500&quot;);</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">        return modelAndView;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static class ErrorWrapperResponse extends HttpServletResponseWrapper &#123;</span><br><span class="line"></span><br><span class="line">        private int status &#x3D; 200;</span><br><span class="line"></span><br><span class="line">        private String message;</span><br><span class="line"></span><br><span class="line">        private boolean hasErrorToSend &#x3D; false;</span><br><span class="line"></span><br><span class="line">        ErrorWrapperResponse(HttpServletResponse response) &#123;</span><br><span class="line">            super(response);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void sendError(int status) throws IOException &#123;</span><br><span class="line">            sendError(status, null);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void sendError(int status, String message) throws IOException &#123;</span><br><span class="line">            this.status &#x3D; status;</span><br><span class="line">            this.message &#x3D; message;</span><br><span class="line">            this.hasErrorToSend &#x3D; true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public int getStatus() &#123;</span><br><span class="line">            if (this.hasErrorToSend) &#123;</span><br><span class="line">                return this.status;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                return super.getStatus();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public String getMessage() &#123;</span><br><span class="line">            return this.message;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public boolean hasErrorToSend() &#123;</span><br><span class="line">            return this.hasErrorToSend;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h5><ul>
+<li><a href="https://blog.csdn.net/andy_zhang2007/article/details/100041219" target="_blank" rel="noopener">注解@ControllerAdvice的工作原理</a></li>
+<li><a href="https://www.cnblogs.com/wudimanong/p/10710923.html" target="_blank" rel="noopener">Spring Cloud微服务如何设计异常处理机制？</a></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E4%BD%BF%E7%94%A8Spring-Retry/">在微服务中使用Spring-Retry</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/Spring%E4%B8%AD%E4%B8%A4%E7%A7%8D%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%EF%BC%9AJDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8CCGLib%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">Spring中两种动态代理：JDK动态代理和CGLib动态代理</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

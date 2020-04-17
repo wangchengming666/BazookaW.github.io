@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>在微服务中使用Spring-Retry | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">在微服务中使用Spring-Retry</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;15:03:46</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Spring-Spring-Boot/">Spring/Spring Boot</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ul>
+<li><code>Spring-Retry</code>为Spring应用程序提供声明式重试机制。在微服务架构中，服务之间的调用会依赖网络，或者在调用第三方接口或者使用mq时，会出现网络抖动，连接超时等网络异常，所以需要重试。</li>
+<li><code>Spring-Boot</code>项目使用<code>Spring-Retry</code>非常简单，在配置类加上@EnableRetry注解启用spring-retry，然后在需要失败重试的方法加@Retryable注解即可，<code>Spring-Retry</code>通过捕获异常来触发重试机制。为了使处理更加健壮并且不太容易出现故障，后续的尝试操作，有时候会帮助失败的操作最后执行成功。</li>
+</ul>
+<h5 id="Maven依赖"><a href="#Maven依赖" class="headerlink" title="Maven依赖"></a>Maven依赖</h5><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">     &lt;groupId&gt;org.springframework.retry&lt;/groupId&gt;</span><br><span class="line">     &lt;artifactId&gt;spring-retry&lt;/artifactId&gt;</span><br><span class="line">   &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">   &lt;dependency&gt;</span><br><span class="line">     &lt;groupId&gt;org.aspectj&lt;/groupId&gt;</span><br><span class="line">     &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;</span><br><span class="line">   &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="入口类"><a href="#入口类" class="headerlink" title="入口类"></a>入口类</h5><p>需要在程序入口加<code>@EnableRetry</code>注解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableRetry</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(DemoApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Service类"><a href="#Service类" class="headerlink" title="Service类"></a>Service类</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RetryService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Retryable</span>(value = Exception<span class="class">.<span class="keyword">class</span>, <span class="title">maxAttempts</span> </span>= <span class="number">5</span>, backoff = <span class="meta">@Backoff</span>(delay = <span class="number">2000L</span>, multiplier = <span class="number">1.5</span>))</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">retry</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"retry"</span> + LocalTime.now());</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RemoteAccessException(<span class="string">"RemoteAccessException...."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">	<span class="meta">@Recover</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">recover</span><span class="params">(RemoteAccessException e)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"error message is"</span> + e.getMessage());</span><br><span class="line">        log.info(<span class="string">"recover...."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Test类"><a href="#Test类" class="headerlink" title="Test类"></a>Test类</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> RetryService retryService;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reteyTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		retryService.retry();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="打印结果"><a href="#打印结果" class="headerlink" title="打印结果"></a>打印结果</h5><p><img src="https://img-blog.csdnimg.cn/2019103116511468.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h5><ul>
+<li><code>@EnableRetry</code>能否重试。在spring-Boot中此参数写在程序入口即可。</li>
+<li><code>@Retryable</code><ul>
+<li>value：需要进行重试的异常，和参数includes是一个意思。默认为空，当参数exclude也为空时，所有异常都将要求重试。</li>
+<li>include：需要进行重试的异常，默认为空。当参数exclude也为空时，所有异常都将要求重试。</li>
+<li>exclude：不需要重试的异常。默认为空，当参include也为空时，所有异常都将要求重试。</li>
+<li>stateful：标明重试是否是有状态的，异常引发事物失效的时候需要注意这个。该参数默认为false。远程方法调用的时候不需要设置，因为远程方法调用是没有事物的；只有当数据库更新操作的时候需要设置该值为true，特别是使用Hibernate的时候。抛出异常时，异常会往外抛，使事物回滚；重试的时候会启用一个新的有效的事物。</li>
+<li>maxAttempts：最大重试次数，默认为3。包括第一次失败。</li>
+<li>backoff：回避策略，默认为空。该参数为空时是，失败立即重试，重试的时候阻塞线程。</li>
+</ul>
+</li>
+<li><code>@Recover</code>：该注解用于恢复处理方法，当全部尝试都失败时执行。返回参数必须和<code>@Retryable</code>修饰的方法返回参数完全一样。第一个参数必须是异常，其他参数和<code>@Retryable</code>修饰的方法参数顺序一致。</li>
+<li><code>@Backoff</code><ul>
+<li>value：重试延迟时间，单位毫秒，默认值1000，即默认延迟1秒。当未设置multiplier时，表示每隔value的时间重试，直到重试次数到达maxAttempts设置的最大允许重试次数。当设置了multiplier参数时，该值作为幂运算的初始值。等同<code>delay</code>参数，两个参数设置一个即可。</li>
+<li>delay：等同<code>value</code>。</li>
+<li>maxDelay：两次重试间最大间隔时间。当设置<code>multiplier</code>参数后，下次延迟时间根据是上次延迟时间乘以<code>multiplier</code>得出的，这会导致两次重试间的延迟时间越来越长，该参数限制两次重试的最大间隔时间，当间隔时间大于该值时，计算出的间隔时间将会被忽略，使用上次的重试间隔时间。</li>
+<li>multiplier：作为乘数用于计算下次延迟时间。公式：<code>delay = delay * multiplier</code></li>
+</ul>
+</li>
+<li>dsa</li>
+</ul>
+<h5 id="注意的地方"><a href="#注意的地方" class="headerlink" title="注意的地方"></a>注意的地方</h5><ul>
+<li>使用了<code>@Retryable</code>的方法里面不能使用try…catch包裹，要在方法上抛出异常，不然不会触发。</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/Spring-Boot%E9%9B%86%E6%88%90rabbitMQ%E5%AE%9E%E7%8E%B0%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81/">Spring Boot集成rabbitMQ实现消息推送</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8/">微服务中如何处理全局异常</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
