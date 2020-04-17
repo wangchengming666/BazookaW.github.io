@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wry">
+
+
+
+
+
+<title>Dubbo进阶（一）：RPC和RESTful | Wry</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">归档</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/about">关于作者</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Dubbo进阶（一）：RPC和RESTful</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wry</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 17, 2020&nbsp;&nbsp;15:40:30</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Dubbo/">Dubbo</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>想要比较清楚的了解<code>RPC</code>和<code>RESTful</code>的区别，我们先来了解一下网络的七层模型。</p>
+<h5 id="OSI网络模型"><a href="#OSI网络模型" class="headerlink" title="OSI网络模型"></a>OSI网络模型</h5><p><img src="https://img-blog.csdnimg.cn/20200414143204841.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>图片来自网络</p>
+<p>我们可以清楚的看到<code>OSI</code>模型一共有七层，从上到下分别是：</p>
+<ul>
+<li>第一层应用层。定义了用于在网络中进行通信和传输数据的接口；</li>
+<li>第二层表示层。定义不同的系统中数据的传输格式，编码和解码规范等；</li>
+<li>第三层会话层。管理用户的会话，控制用户间逻辑连接的建立和中断；</li>
+<li>第四层传输层。管理着网络中的端到端的数据传输；</li>
+<li>第五层网络层。定义网络设备间如何传输数据；</li>
+<li>第六层链路层。将上面的网络层的数据包封装成数据帧，便于物理层传输；</li>
+<li>第七层物理层。这一层主要就是传输这些二进制数据。</li>
+</ul>
+<p>众所周知<code>REST API</code>是基于<code>HTTP</code>协议来传输数据的，<code>RPC</code>主要是基于<code>TCP/IP</code>协议的，所以效率来看的话，<code>RPC</code>的效率会高一点，尤其是在复杂的系统中使用<code>RPC</code>效果会更明显。</p>
+<h5 id="什么是REST-API"><a href="#什么是REST-API" class="headerlink" title="什么是REST API"></a>什么是REST API</h5><p>RESTFUL是一种网络应用程序的设计风格和开发方式，基于HTTP，可以使用XML格式定义或JSON格式定义。RESTFUL适用于移动互联网厂商作为业务使能接口的场景，实现第三方OTT调用移动网络资源的功能，动作类型为新增、变更、删除所调用资源。</p>
+<p>↑以上内容来自百度百科。</p>
+<p><code>REST</code>即Representational State Transfer的缩写，是基于HTTP协议之上的一组约束和属性，翻译过来是表现层状态转移。</p>
+<p><code>REST</code>是一种设计风格（并非一种标准），描述的是在网络中<code>Client</code>和<code>Server</code>的一种交互形式，目的是便于不同的软件/程序在网络中互相传递消息。</p>
+<p>REST API大概有以下三部分组成：</p>
+<ul>
+<li>method：动词（GET，POST之类的）</li>
+<li>Host/post：URI(统一资源标识)、服务器，端口</li>
+<li>Path：名词（路径，服务器里面的某个东西）路径的结尾是资源的形态(如text, html, image, pdf等)。</li>
+</ul>
+<p>REST API常见的HTTP code</p>
+<ul>
+<li>Status Code: 200 OK</li>
+<li>Status Code: 400 Bed Request</li>
+<li>Status Code: 404 Not Found</li>
+<li>Status Code: 500 Internal Server Error </li>
+</ul>
+<p><code>REST</code>充分利用HTTP自身的<code>GET</code>、<code>POST</code>、<code>PUT</code>、<code>DELETE</code>的方法实现接口的统一化，比如对同一个资源进行CRUD操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET     &#x2F;dogs    获取所有狗狗 </span><br><span class="line">POST    &#x2F;dogs    新增&#x2F;修改狗狗信息</span><br><span class="line">PUT     &#x2F;dogs    修改狗狗信息</span><br><span class="line">DELETE  &#x2F;dogs    删除狗狗信息</span><br></pre></td></tr></table></figure>
+
+<p>REST API主要的设计原则：</p>
+<ul>
+<li>资源与URI</li>
+<li>统一资源接口(HTTP方法如GET，PUT和POST)</li>
+<li>资源的表述</li>
+<li>资源的链接</li>
+<li>状态的转移</li>
+</ul>
+<p>总之，RESTful的核心就是后端将资源发布为URI，前端通过URI访问资源，并通过HTTP动词表示要对资源进行的操作。</p>
+<h5 id="什么是RPC"><a href="#什么是RPC" class="headerlink" title="什么是RPC"></a>什么是RPC</h5><p><strong>RPC(Remote Procedure Call)</strong>，远程过程调用，就是从一台机器（客户端）上通过参数传递的方式调用另一台机器（服务器）上的一个函数或方法（可以统称为服务）并得到返回的结果。</p>
+<p><code>RPC</code>在使用形式上像调用本地函数（或方法）一样去调用远程的函数（或方法）。通常的调用过程，把函数序列化，远端收到后，再把函数反序列化，完成函数调用。</p>
+<p>一个完整的RPC的架构应该包含以下几个组件：</p>
+<ul>
+<li>客户端（Client）：服务的调用方；</li>
+<li>服务端（Server）：真正的服务提供者；</li>
+<li>Client stub：存放服务端的地址消息，再将客户端的请求参数打包成网络消息，然后通过网络远程发送给服务方；</li>
+<li>Server stub：接收客户端发送过来的消息，将消息解包，并调用本地的方法。</li>
+</ul>
+<h5 id="一个RPC的完整过程"><a href="#一个RPC的完整过程" class="headerlink" title="一个RPC的完整过程"></a>一个RPC的完整过程</h5><p><code>RPC</code>采用<code>Client-Server</code>结构，通过<code>request-response</code>消息模式实现。</p>
+<p>实际情况下，RPC很少用到http协议来进行数据传输，毕竟只是想传输一下数据而已，何必动用到一个文本传输的应用层协议呢。为什么不直接使用二进制传输？比如直接用Java的Socket协议进行传输？</p>
+<p>不管用何种协议进行数据传输，一个完整的RPC过程，都可以用下面这张图来描述：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200415092116313.gif" alt="在这里插入图片描述"></p>
+<p>对上图的解释如下：</p>
+<ul>
+<li>Client是服务调用方，Server是服务提供者。</li>
+<li>左边的Client里的Application就是一个真正的调用者，先去调用Client Stub这个代理对象，其实内部是通过RPC方式来进行远程调用的代理对象，这一步主要是来传递参数。</li>
+<li>至于Client Runtime Library，则是实现远程调用的工具包，比如jdk的Socket。最后通过底层网络实现实现数据的传输。</li>
+<li>然后客户端本地操作系统将消息从客户端机器发送到服务端机器。</li>
+<li>服务端操作系统接收到数据包传递给Server Stub。</li>
+<li>Server Stub解组消息为参数。</li>
+<li>Server Stub再调用服务端的函数（或方法），得到执行结果之后以反方向的相同的步骤响应给客户端，至此就完成了一次RPC调用。</li>
+</ul>
+<p>这个过程中最重要的就是<code>序列化</code>和<code>反序列化</code>了。因为数据传输的数据包必须是二进制的，直接丢一个Java对象过去，人家可不认识，必须把Java对象序列化为二进制格式，传给Server端，Server端接收到之后，再反序列化为Java对象。</p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
+<li>REST API主要为第三方暴露接口，比如暴露给APP端，WEB端。</li>
+<li>RPC主要在自家比较复杂的业务系统中使用，完成服务之间的通信。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200415094618623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/">使用Jenkins的流水线（Pipeline）构建项目</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
