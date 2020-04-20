@@ -195,7 +195,39 @@
 
         <div class="post-content">
             <p>在当今微服务盛行的大环境下，设计一套高并发、高可扩展、自动容错和高可用的分布式系统无疑是离不开一套优秀的<code>RPC</code>框架的。<code>Dubbo</code>是阿里开源的<code>RPC</code>框架，在市场上众多<code>RPC</code>框架中是最受欢迎的，各大公司也都争相拥抱和使用。</p>
-<h5 id="Dubbo的架构图"><a href="#Dubbo的架构图" class="headerlink" title="Dubbo的架构图"></a>Dubbo的架构图</h5><p><img src="https://img-blog.csdnimg.cn/20200415143110190.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>图片来自<a href="http://dubbo.apache.org/zh-cn/docs/user/quick-start.html" target="_blank" rel="noopener">Dubbo官网</a>，各个角色说明如下：<br>| 角色 | 角色说明 |<br>|–|–|<br>| Provider | 暴露服务的服务提供方 |<br>| Container | 服务运行容器 |<br>| Consumer | 调用远程服务的服务消费方 |<br>| Registry | 服务注册与发现的注册中心 |<br>| Monitor | 统计服务的调用次数和调用时间的监控中心 |<br>Provider在启动的时候会向注册中心注册元数据（IP/端口之类的），Consumer在启动的时候会向注册中心订阅（第一次订阅会拉去全部数据）服务方的元数据，注册中心发生数据变化的时候，会推送给订阅的Consumer。在获取到服务方的元数据之后可以进行<code>RPC</code>调用，在<code>RPC</code>调用后会向监控中心上报统计信息（比如并发数和调用的接口），开发人员可以在监控中心看到服务的调用情况。</p>
+<h5 id="Dubbo的架构图"><a href="#Dubbo的架构图" class="headerlink" title="Dubbo的架构图"></a>Dubbo的架构图</h5><p><img src="https://img-blog.csdnimg.cn/20200415143110190.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>图片来自<a href="http://dubbo.apache.org/zh-cn/docs/user/quick-start.html" target="_blank" rel="noopener">Dubbo官网</a>，各个角色说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>角色说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Provider</td>
+<td>暴露服务的服务提供方</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>服务运行容器</td>
+</tr>
+<tr>
+<td>Consumer</td>
+<td>调用远程服务的服务消费方</td>
+</tr>
+<tr>
+<td>Registry</td>
+<td>服务注册与发现的注册中心</td>
+</tr>
+<tr>
+<td>Monitor</td>
+<td>统计服务的调用次数和调用时间的监控中心</td>
+</tr>
+<tr>
+<td>Provider在启动的时候会向注册中心注册元数据（IP/端口之类的），Consumer在启动的时候会向注册中心订阅（第一次订阅会拉去全部数据）服务方的元数据，注册中心发生数据变化的时候，会推送给订阅的Consumer。在获取到服务方的元数据之后可以进行<code>RPC</code>调用，在<code>RPC</code>调用后会向监控中心上报统计信息（比如并发数和调用的接口），开发人员可以在监控中心看到服务的调用情况。</td>
+<td></td>
+</tr>
+</tbody></table>
 <h5 id="Dubbo的分层和核心组件"><a href="#Dubbo的分层和核心组件" class="headerlink" title="Dubbo的分层和核心组件"></a>Dubbo的分层和核心组件</h5><p><img src="https://img-blog.csdnimg.cn/20200420082736740.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>核心组件如下：</p>
 <table>
 <thead>
