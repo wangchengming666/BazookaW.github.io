@@ -224,8 +224,8 @@
 <td>统计服务的调用次数和调用时间的监控中心</td>
 </tr>
 <tr>
-<td>Provider在启动的时候会向注册中心注册元数据（IP/端口之类的），Consumer在启动的时候会向注册中心订阅（第一次订阅会拉去全部数据）服务方的元数据，注册中心发生数据变化的时候，会推送给订阅的Consumer。在获取到服务方的元数据之后可以进行<code>RPC</code>调用，在<code>RPC</code>调用后会向监控中心上报统计信息（比如并发数和调用的接口），开发人员可以在监控中心看到服务的调用情况。</td>
-<td></td>
+<td>Provider</td>
+<td>在启动的时候会向注册中心注册元数据（IP/端口之类的），Consumer在启动的时候会向注册中心订阅（第一次订阅会拉去全部数据）服务方的元数据，注册中心发生数据变化的时候，会推送给订阅的Consumer。在获取到服务方的元数据之后可以进行<code>RPC</code>调用，在<code>RPC</code>调用后会向监控中心上报统计信息（比如并发数和调用的接口），开发人员可以在监控中心看到服务的调用情况。</td>
 </tr>
 </tbody></table>
 <h5 id="Dubbo的分层和核心组件"><a href="#Dubbo的分层和核心组件" class="headerlink" title="Dubbo的分层和核心组件"></a>Dubbo的分层和核心组件</h5><p><img src="https://img-blog.csdnimg.cn/20200420082736740.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>核心组件如下：</p>
