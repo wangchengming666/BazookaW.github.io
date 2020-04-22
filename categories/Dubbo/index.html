@@ -1,165 +1,274 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <meta name="author" content="Wry">
-
-
-
-
-
-<title>Category: Dubbo | Wry</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
-
-
-
-
-    <!-- stylesheets list from _config.yml -->
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    categories.ejs: undefined |
     
-    <link rel="stylesheet" href="/css/style.css">
-    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
 
-
-
-    <!-- scripts list from _config.yml -->
+  
     
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
 
-
-
-    
-    
-        
-    
-
+  
+  
+<script src="/js/pace.min.js"></script>
 
 <meta name="generator" content="Hexo 4.2.0"></head>
+
 <body>
-    <div class="wrapper">
-        <header>
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-header header-logo"><a href="/">Wry&#39;s Blog</a></div>
-            <div class="menu navbar-right">
-                
-                    <a class="menu-item" href="/archives">归档</a>
-                
-                    <a class="menu-item" href="/category">分类</a>
-                
-                    <a class="menu-item" href="/about">关于作者</a>
-                
-                <input id="switch_default" type="checkbox" class="switch_default">
-                <label for="switch_default" class="toggleBtn"></label>
-            </div>
+<main class="content">
+  <section class="outer">
+    <article class="articles">
+      
+      <h1 class="page-type-title">Dubbo</h1>
+      
+      
+      
+        
+        
+          
+          
+      <div class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2020" class="archive-year">2020</a>
         </div>
-    </nav>
+        <div class="archives">
+          
+          <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" class="archive-article-date">
+  <time datetime="2020-04-22T03:18:00.000Z" itemprop="datePublished">04/22</time>
+</a>
+      
+  
+    <h2 itemprop="name">
+      <a class="archive-article-title" href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">Dubbo进阶（四）：Dubbo注册中心</a>
+    </h2>
+  
+  
+
+
+
+
+    </header>
+    
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
 
     
-    <nav class="navbar-mobile" id="nav-mobile">
-        <div class="container">
-            <div class="navbar-header">
-                <div>
-                    <a href="/">Wry&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-                </div>
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
-            </div>
-            <div class="menu" id="mobile-menu">
-                
-                    <a class="menu-item" href="/archives">归档</a>
-                
-                    <a class="menu-item" href="/category">分类</a>
-                
-                    <a class="menu-item" href="/about">关于作者</a>
-                
-            </div>
-        </div>
-    </nav>
+    
+  </div>
+</article>
+          
+        
+        
+          <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" class="archive-article-date">
+  <time datetime="2020-04-21T15:24:32.000Z" itemprop="datePublished">04/21</time>
+</a>
+      
+  
+    <h2 itemprop="name">
+      <a class="archive-article-title" href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/">Dubbo进阶（三）：SpringBoot整合Dubbo构建分布式服务</a>
+    </h2>
+  
+  
 
-</header>
-<script>
-    var mobileBtn = function f() {
-        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
-        var mobileMenu = document.getElementById("mobile-menu");
-        if(toggleMenu.classList.contains("active")){
-           toggleMenu.classList.remove("active")
-            mobileMenu.classList.remove("active")
-        }else{
-            toggleMenu.classList.add("active")
-            mobileMenu.classList.add("active")
-        }
-    }
-</script>
-        <div class="main">
-            
 
+
+
+    </header>
+    
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
 
     
-<div class="container">
-    <div class="post-wrap categories">
-        <h2 class="post-title">-&nbsp;Categories&nbsp;·&nbsp;Dubbo-</h2>
+    
+  </div>
+</article>
+          
+        
+        
+          <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" class="archive-article-date">
+  <time datetime="2020-04-20T01:32:42.000Z" itemprop="datePublished">04/20</time>
+</a>
+      
+  
+    <h2 itemprop="name">
+      <a class="archive-article-title" href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/">Dubbo进阶（二）：Dubbo是什么</a>
+    </h2>
+  
+  
+
+
+
+
+    </header>
+    
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
+
+    
+    
+  </div>
+</article>
+          
+        
+        
+          <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/" class="archive-article-date">
+  <time datetime="2020-04-17T07:40:30.000Z" itemprop="datePublished">04/17</time>
+</a>
+      
+  
+    <h2 itemprop="name">
+      <a class="archive-article-title" href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/">Dubbo进阶（一）：RPC和RESTful</a>
+    </h2>
+  
+  
+
+
+
+
+    </header>
+    
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
+
+    
+    
+  </div>
+</article>
+          
+          
+        </div>
+      </div>
+      
+    
+  
+    
+  </section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
     </div>
-    <div class="post-wrap archive">
-    
-    
-        
-
-        
-            <h3>2020</h3>
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">Dubbo进阶（四）：Dubbo注册中心</a>
-            <span class="archive-item-date">四月 22, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/">Dubbo进阶（三）：SpringBoot整合Dubbo构建分布式服务</a>
-            <span class="archive-item-date">四月 21, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/">Dubbo进阶（二）：Dubbo是什么</a>
-            <span class="archive-item-date">四月 20, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/">Dubbo进阶（一）：RPC和RESTful</a>
-            <span class="archive-item-date">四月 17, 2020</span>
-        </article>
-    
-    
-</div>
-</div>
-
-        </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
-        <span>© Wry | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
-    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
 </footer>
 
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
     </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="/js/ocean.js"></script>
+
+
 </body>
 </html>
