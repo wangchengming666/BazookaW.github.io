@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    设计模式总结 |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-设计模式总结" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      设计模式总结
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" class="article-date">
+  <time datetime="2020-04-17T05:55:22.000Z" itemprop="datePublished">2020-04-17</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>从18年10月份开始学习设计模式，到19年1月底才看完，这篇博文主要总结这个过程中我的收获和一些思考。</p>
+<a id="more"></a>
+
+<p>从18年10月份开始学习设计模式，到19年1月底才看完，这篇博文主要总结这个过程中我的收获和一些思考。</p>
+<p><strong>我的收获</strong></p>
+<ul>
+<li>从刚开始接触Java就听说过设计模式，但是由于自己的能力有限，又觉得设计模式是一个很高大上的东西，所以一直都没有碰，这次有幸系统的学习了一遍设计模式。</li>
+<li>在开发之前开始思考如何设计更合理了。可能在这之前并没有想过太多的设计相关的东西，只是想着快速实现并且不出现bug，并没有想着怎样设计才是更合理一点。</li>
+<li>开始考虑系统的可扩展性了，毕竟总会改变。</li>
+<li>在遇到问题后开始想有那个设计模式会适用这个场景。</li>
+<li>对面向对象有了更深一步的了解。</li>
+</ul>
+<p><strong>面向对象的三大特性</strong></p>
+<ul>
+<li><code>封装（Encapsulation）</code><br>隐藏对象的具体实现细节，通过共有方法暴露对象的功能。内部结构可以自由修改，同时可对成员进行更加精确的控制 (比如在setter方法中加值合法判断)</li>
+<li><code>继承（Inheritance）</code><br>使用已经存在的类作为基础类（父类），在此基础上建立新类（子类），子类既可复用父类的功能，也能进行扩展，从而实现代码复用。 另外Java是单继承的，可以通过接口和内部类实现多继承。但是有几点需要注意一下：<ul>
+<li>子类拥有父类非private的属性与方法</li>
+<li>构造方法只能调用，不能实现，子类默认调用父类的无参构造方法，<br>如果父类没有无参的构造方法，需要使用super显式调用！</li>
+<li>慎用继承，要考虑是否需要从子类向父类进行向上转型！(转型要instanceof)</li>
+</ul>
+</li>
+<li><code>多态（Polymorphism）</code><br>一个类实例的相同方法在不同的情形下有不同的表现形式。多态分为两种：方法重载和重写（主要描述父类和子类之前的多态）。</li>
+</ul>
+<p><strong>类与类间的关系</strong></p>
+<ul>
+<li>继承，实现，依赖，关联，聚合，组合</li>
+<li>类的相关程度：继承 &lt; 实现 &lt; 依赖 &lt; 关联 &lt; 聚合 &lt; 组合</li>
+<li>依次的UML类图标记<ul>
+<li>继承<br><img src="https://img-blog.csdnimg.cn/20190128142710200.png" alt="在这里插入图片描述"></li>
+<li>实现<br><img src="https://img-blog.csdnimg.cn/20190128142718189.png" alt="在这里插入图片描述"></li>
+<li>依赖<br><img src="https://img-blog.csdnimg.cn/2019012814272875.png" alt="在这里插入图片描述"></li>
+<li>关联<br><img src="https://img-blog.csdnimg.cn/20190128142741299.png" alt="在这里插入图片描述"></li>
+<li>聚合<br><img src="https://img-blog.csdnimg.cn/20190128142755925.png" alt="在这里插入图片描述"></li>
+<li>组合<br><img src="https://img-blog.csdnimg.cn/20190128142803824.png" alt="在这里插入图片描述"></li>
+</ul>
+</li>
+</ul>
+<p><strong><a href="https://blog.csdn.net/wangchengming1/article/details/83090643" target="_blank" rel="noopener">设计模式的六大原则</a></strong></p>
+<ul>
+<li>单一职责原则<br>每一个类应该专注于做一件事情。 即：高内聚，低耦合。</li>
+<li>里氏替换原则<br>在任何父类出现的地方都可以用它的子类来替代。</li>
+<li>依赖倒置原则<br>要依赖于抽象，不要依赖于具体实现。</li>
+<li>接口隔离原则<br>应当为客户端提供尽可能小的单独的接口，而不是提供大的总的接口。</li>
+<li>迪米特法则<br>一个对象应当尽量少地与其他对象之间发生相互作用，使得系统功能模块相对独立。</li>
+<li>开闭原则<br>一个对象对扩展开放，对修改关闭。即：对类的改动是通过增加代码进行的，而不是修改现有代码。</li>
+</ul>
+<p><strong>设计模式逐一攻破</strong></p>
+<ul>
+<li><a href="https://blog.csdn.net/wangchengming1/column/info/28877" target="_blank" rel="noopener">设计模式专栏</a></li>
+<li><a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">github</a></li>
+</ul>
+<p>永远不要对学习失去兴趣。</p>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" data-id="ck9bcajny0069qt1u61f7aggx" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%EF%BC%8C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">软件工程，设计模式</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+      <a href="/2020/04/17/Spring%E4%B8%AD%E6%B6%89%E5%8F%8A%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" class="article-nav-link">
+        <strong class="article-nav-caption">前一篇</strong>
+        <div class="article-nav-title">
+          
+            Spring中涉及的设计模式总结
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/04/17/%E8%A3%85%E9%A5%B0%E6%A8%A1%E5%BC%8F-Decorator-Pattern/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">装饰模式(Decorator Pattern)</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>

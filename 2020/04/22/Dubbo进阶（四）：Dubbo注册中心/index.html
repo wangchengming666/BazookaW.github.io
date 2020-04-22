@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    Dubbo进阶（四）：Dubbo注册中心 |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-Dubbo进阶（四）：Dubbo注册中心" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      Dubbo进阶（四）：Dubbo注册中心
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" class="article-date">
+  <time datetime="2020-04-22T03:18:00.000Z" itemprop="datePublished">2020-04-22</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+    <div class="tocbot"></div>
+
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>在Dubbo微服务体系中，注册中心是其核心的组件之一。Dubbo通过注册中心实现了分布式环境中各服务之间的注册与发现，是各个分布式节点之间的纽带。</p>
+<a id="more"></a>
+
+<p>在Dubbo微服务体系中，注册中心是其核心的组件之一。Dubbo通过注册中心实现了分布式环境中各服务之间的注册与发现，是各个分布式节点之间的纽带。主要作用有：</p>
+<ul>
+<li>动态加入：一个服务提供者通过注册中心可以动态的把自己暴露给其他消费者，无需消费者逐个去更新配置文件。</li>
+<li>动态发现：一个消费者可以动态感知新的配置、路由规则和新的服务提供者，无需重启服务使之生效。</li>
+<li>动态调整：注册中心支持参数的动态调整，新参数自动更新到所有相关服务节点。</li>
+<li>统一配置：避免了本地配置导致每个服务的配置不一致问题。</li>
+</ul>
+<p><code>dubbo</code>主要包含四种注册中心的实现，分别是：<code>Zookeeper</code>、<code>Redis</code>、<code>Simple</code>、<code>Multicast</code>。</p>
+<p>其中<code>Zookeeper</code>是官方推荐的注册中心实现，在生产环境中已经有大量实际使用，具体的实现在Dubbo的源码 dubbo-registry-zookeeper模块中。而Redis注册中心在稳定性方面相比ZK就差了一些，其稳定性主要是依赖Redis本身，阿里内部并没有使用Redis作为注册中心。Simple是一个基于内存的简单的注册中心实现，它本身就是一个标准的RPC服务，不支持集群，可能出现单点故障。Multicast模式则不需要启动任何注册中心，只要通过广播地址，就可以互相发现。服务提供者启动时，会广播自己的地址，消费者启动时，会广播订阅请求，服务提供者收到订阅请求，会根据配置广播或单播给订阅者。</p>
+<h5 id="注册中心的工作流程"><a href="#注册中心的工作流程" class="headerlink" title="注册中心的工作流程"></a>注册中心的工作流程</h5><p><img src="https://img-blog.csdnimg.cn/20200422100258346.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><code>Provider注册</code>：Provider启动时，会向注册中心写入自己的元数据信息，同时会订阅配置元数据信息。</li>
+<li><code>Consumer订阅</code>：这里的订阅指Consumer启动时也会向注册中心写入自己的元数据信息，并订阅服务提供者、路由和配置元数据信息。</li>
+<li><code>服务治理中心启动</code>：dubbo-admin启动时，会同时订阅所有消费者、服务提供者、路由和配置元数据信息。</li>
+<li><code>动态注册、发现</code>：当有新的Provider加入或者有离开时，注册中心服务提供者目录会发生变化，变化信息会动态通知给消费者、服务治理中心。</li>
+<li><code>监控中心采集</code>：当Consumer发起调用时，会异步将调用、统计信息等上报给监控中心。</li>
+</ul>
+<h5 id="zookeeper的原理"><a href="#zookeeper的原理" class="headerlink" title="zookeeper的原理"></a>zookeeper的原理</h5><p><code>zookeeper</code>是树形节点的注册中心，每个节点的类型分为持久节点、持久顺序节点、临时节点、临时顺序节点。</p>
+<ul>
+<li>持久节点：服务注册后保证节点不会丢失，注册中心重启也会存在。</li>
+<li>持久顺序节点：在持久节点特性的基础上增加了节点先后顺序的能力。</li>
+<li>临时节点：服务注册后连接丢失或者session超时，注册的节点会自动消失。</li>
+<li>临时节点顺序：在临时节点特性的基础上增加了节点先后顺序的能力。</li>
+</ul>
+<p>Dubbo使用ZK作为注册中心时，只会创建临时节点和持久节点两种，对创建顺序并没有要求。</p>
+<p>/dubbo/com.foo.BarService/providers是服务提供者在Zookeeper注册中心的路径示例，是一种属性结构，该结构分为四层：root（根节点，对应示例中的dubbo）、service（接口名称，对应示例中的com.foo.BarService）、四种服务目录（对应示例中的providers，其他目录还有consumers、routers、configurators）。在服务分类节点下是具体的Dubbo服务URL。属性结构示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+ &#x2F;dubbo</span><br><span class="line">+-- service</span><br><span class="line">		+-- providers</span><br><span class="line">		+-- consumers</span><br><span class="line">		+-- routers</span><br><span class="line">		+-- configurators</span><br></pre></td></tr></table></figure>
+
+<p>树形结构的关系：<br>（1）树的根节点是注册中心分组，下面有多个服务接口，分组值来自用户配置<code>&lt;dubbo:registry&gt;</code>中的group属性，默认是/dubbo.<br>（2）服务接口下包含四类子目录，分别是providers、consumers、routers、configurators，这个路径时持久节点。<br>（3）服务提供者目录（/dubbo/service/providers）下面包含的接口有多个服务提供者URL元数据信息。<br>（4）服务消费者目录（/dubbo/service/consumers）下面包含的解耦有多个消费者URL元数据信息。<br>（5）路由配置目录（/dubbo/service/routers）下面包含多个用于消费者路由策略URL元数据信息。<br>（6）动态配置目录（/dubbo/service/configurators）下面包含多个用于服务者动态配置URL元数据信息。</p>
+<p>树形示意图，如下：<br><img src="https://img-blog.csdnimg.cn/20200422104226376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>配置实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;beans&gt;</span><br><span class="line">  &lt;!-- 适用于Zookeeper一个集群有多个节点，多个IP和端口逗号分割--&gt;</span><br><span class="line">  &lt;dubbo:registry protocol&#x3D;&quot;zookeeper&quot; address&#x3D;&quot;ip:port,ip:port,ip:port&quot; &#x2F;&gt;</span><br><span class="line">  &lt;!-- 适用于Zookeeper多个集群有多个节点，多个IP和端口用竖线分割--&gt;</span><br><span class="line">  &lt;dubbo:registry protocol&#x3D;&quot;zookeeper&quot; address&#x3D;&quot;ip:port|ip:port|ip:port&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;beans&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="zookeeper发布的实现"><a href="#zookeeper发布的实现" class="headerlink" title="zookeeper发布的实现"></a>zookeeper发布的实现</h5><p><code>provider</code>和<code>Consumer</code>需要将自己注册到Zookeeper。服务提供者的注册是为了让消费者订阅（准确来说应该叫感知服务的存在），从而发起远程调用；也上服务治理中心感知有新的服务提供者上线。消费者的发布是为了让服务治理中心可以发现自己。Zookeeper发布订阅代码非常简单，只是调用Zookeeper 的 Client 库在注册中心创建一个目录而已，如下代码所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void doRegister(URL url) &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		zkClient.create(toUrlPath(url), url.getParameter(DYNAMIC_KEY, true));</span><br><span class="line">	&#125; catch (Throwable e) &#123;</span><br><span class="line">		throw new RpcException(&quot;Failed to register &quot; + url + &quot; to zookeeper &quot; + getUrl() + &quot;, cause: &quot; + e.getMessage(), e);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>取消发布对应也很简单，只是把ZK注册中心上对应的路径删除，如下代码所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void doUnregister(URL url) &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		zkClient.delete(toUrlPath(url));</span><br><span class="line">	&#125; catch (Throwable e) &#123;</span><br><span class="line">		throw new RpcException(&quot;Failed to unregister &quot; + url + &quot; to zookeeper &quot; + getUrl() + &quot;, cause: &quot; + e.getMessage(), e);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="zookeeper订阅的实现"><a href="#zookeeper订阅的实现" class="headerlink" title="zookeeper订阅的实现"></a>zookeeper订阅的实现</h5><p>订阅通常有pull和push两种方式，一种是客户端定时轮训注册中心拉取配置，另一种是注册中心主动推送数据给客户端。这两种方式各有利弊，目前Dubbo采用的是第一次启动拉取方式，后续接收事件重新拉取数据。</p>
+<p>在服务暴露时，服务端会订阅configurators用于监听动态配置，在消费端启动时，消费端会订阅providers、routers和configurators这三个目录，分别对应服务提供者、路由和动态配置变更通知。</p>
+<p>Dubbo提供了两种不同ZK开源客户端库的封装，分别对应接口：</p>
+<ul>
+<li>Apache Curator</li>
+<li>zkClient</li>
+</ul>
+<p>我们可以在<code>&lt;dubbo:registry&gt;</code>的client属性中设置curator、zkClient来使用不同的客户端实现库，如果不设置默认使用Curator作为实现。</p>
+<p>Zookeeper客户端采用的是<code>“事件通知” + “客户端拉取”</code>的方式，客户端在第一次连接上注册中心时，会获取对应目录西安全量的数据。并在订阅的节点上注册一个watcher，客户端与注册中心之间保持TCP长连接，后续每个节点有任何数据变化的时候，注册中心会根据watcher的回调主动通知客户端（事件通知），客户端接到通知后，会把对应节点下的全量数据都拉取过来（客户端拉取），这一点在<code>NotifyListener#notify(List&lt;URL&gt; urls)</code>接口上就有说明。全量拉取有一个局限，党委服务节点较多时会对网络造成很大的压力。</p>
+<p>Zookeeper每个节点都有一个版本号，当某个节点的数据发生变化时，对应的版本号就会变化，并触发watcher事件，推送数据给订阅方。版本号强调的是变化次数，即使该节点的值没有变化，只要有更新操作，依然会使版本号变化。</p>
+<p>Zookeeper实现服务订阅的核心代码在ZookeeperRegistry中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">   public void doSubscribe(final URL url, final NotifyListener listener) &#123;</span><br><span class="line">       try &#123;</span><br><span class="line">         </span><br><span class="line">           if (ANY_VALUE.equals(url.getServiceInterface())) &#123;</span><br><span class="line">         </span><br><span class="line">               &#x2F;***              服务治理中心订阅全部服务               ***&#x2F;</span><br><span class="line"></span><br><span class="line">               &#x2F;&#x2F; 订阅所有数据</span><br><span class="line">               String root &#x3D; toRootPath();</span><br><span class="line">               &#x2F;&#x2F; 获取Listeners</span><br><span class="line">               ConcurrentMap&lt;NotifyListener, ChildListener&gt; listeners &#x3D; zkListeners.get(url);</span><br><span class="line">               if (listeners &#x3D;&#x3D; null) &#123;</span><br><span class="line">                   &#x2F;&#x2F; 为获取到监听器，这里创建一个监听器并放入缓存。</span><br><span class="line">                   zkListeners.putIfAbsent(url, new ConcurrentHashMap&lt;&gt;());</span><br><span class="line">                   listeners &#x3D; zkListeners.get(url);</span><br><span class="line">               &#125;</span><br><span class="line">               ChildListener zkListener &#x3D; listeners.get(listener);</span><br><span class="line">               if (zkListener &#x3D;&#x3D; null) &#123;</span><br><span class="line">                   &#x2F;&#x2F; zkListener为空，说明是第一次，新建一个listener</span><br><span class="line">                   listeners.putIfAbsent(listener, (parentPath, currentChilds) -&gt; &#123;</span><br><span class="line">                       &#x2F;&#x2F; 这是一个内部类实现，不会立即执行，只会在触发变更通知时执行</span><br><span class="line">                       &#x2F;&#x2F; 如果子节点有变化则会接收到通知，遍历所有子节点</span><br><span class="line">                       for (String child : currentChilds) &#123;</span><br><span class="line">                           child &#x3D; URL.decode(child);</span><br><span class="line">                           &#x2F;&#x2F; 如果存在子节点还未被订阅，说明是新增节点吗，则进行订阅</span><br><span class="line">                           if (!anyServices.contains(child)) &#123;</span><br><span class="line">                               anyServices.add(child);</span><br><span class="line">                                &#x2F;&#x2F; 订阅新节点</span><br><span class="line">                               subscribe(url.setPath(child).addParameters(INTERFACE_KEY, child,</span><br><span class="line">                                       Constants.CHECK_KEY, String.valueOf(false)), listener);</span><br><span class="line">                           &#125;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;);</span><br><span class="line">                   zkListener &#x3D; listeners.get(listener);</span><br><span class="line">               &#125;</span><br><span class="line">             &#x2F;&#x2F; 创建持久节点，接下来订阅持久节点的直接子节点</span><br><span class="line">               zkClient.create(root, false);</span><br><span class="line">               List&lt;String&gt; services &#x3D; zkClient.addChildListener(root, zkListener);</span><br><span class="line">               if (CollectionUtils.isNotEmpty(services)) &#123;</span><br><span class="line">                  &#x2F;&#x2F; 遍历所有子节点进行订阅</span><br><span class="line">                   for (String service : services) &#123;</span><br><span class="line">                       service &#x3D; URL.decode(service);</span><br><span class="line">                       anyServices.add(service);</span><br><span class="line">                       subscribe(url.setPath(service).addParameters(INTERFACE_KEY, service,</span><br><span class="line">                               Constants.CHECK_KEY, String.valueOf(false)), listener);</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125; else &#123;</span><br><span class="line"></span><br><span class="line">               &#x2F;***             普通消费者服务订阅               ***&#x2F;</span><br><span class="line">            </span><br><span class="line"></span><br><span class="line">                List&lt;URL&gt; urls &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">               &#x2F;&#x2F;toCategoriesPath(url): 根据url类别，获取一组要订阅的路径</span><br><span class="line">               for (String path : toCategoriesPath(url)) &#123;</span><br><span class="line">                   ConcurrentMap&lt;NotifyListener, ChildListener&gt; listeners &#x3D; zkListeners.get(url);</span><br><span class="line">                   if (listeners &#x3D;&#x3D; null) &#123;</span><br><span class="line">                       &#x2F;&#x2F; 如果listeners缓存为空则创建缓存</span><br><span class="line">                       zkListeners.putIfAbsent(url, new ConcurrentHashMap&lt;&gt;());</span><br><span class="line">                       listeners &#x3D; zkListeners.get(url);</span><br><span class="line">                   &#125;</span><br><span class="line">                   ChildListener zkListener &#x3D; listeners.get(listener);</span><br><span class="line">                   &#x2F;&#x2F; 如果zkListener缓存为空则创建缓存</span><br><span class="line">                   if (zkListener &#x3D;&#x3D; null) &#123;</span><br><span class="line">                       listeners.putIfAbsent(listener, (parentPath, currentChilds) -&gt; ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds)));</span><br><span class="line">                       zkListener &#x3D; listeners.get(listener);</span><br><span class="line">                   &#125;</span><br><span class="line">                   zkClient.create(path, false);</span><br><span class="line">                   &#x2F;&#x2F; 订阅，返回该节点下的子路径并缓存</span><br><span class="line">                   List&lt;String&gt; children &#x3D; zkClient.addChildListener(path, zkListener);</span><br><span class="line">                   if (children !&#x3D; null) &#123;</span><br><span class="line">                       urls.addAll(toUrlsWithEmpty(url, path, children));</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">               &#x2F;&#x2F; 回调NotifyListener, 更新本地缓存信息</span><br><span class="line">               notify(url, listener, urls);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; catch (Throwable e) &#123;</span><br><span class="line">           throw new RpcException(&quot;Failed to subscribe &quot; + url + &quot; to zookeeper &quot; + getUrl() + &quot;, cause: &quot; + e.getMessage(), e);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="zookeeper的缓存机制"><a href="#zookeeper的缓存机制" class="headerlink" title="zookeeper的缓存机制"></a>zookeeper的缓存机制</h5><p>缓存的存在就是用空间换取时间的一种机制。如果Consumer每次远程调用都要先去注册中心拉取一次可调用的服务列表，则会让注册中心承受巨大的流量压力。另外，每个额外的网络请求也会让整个系统的性能下降，同时服务列表变化的频率本身并不是很高，除非服务提供商对接口做了升级、或是服务节点新增或下线（从某各角度来看这并不是一个很高频的操作），所以每次都拉取也就显得并不那么必要。</p>
+<p>因此针对这个问题，dubbo的注册中心实现了通用的缓存机制，在抽象类AbstractRegistry中实现。AbstractRegistry类结构关系图如下所示：<br><img src="https://img-blog.csdnimg.cn/20200422110514363.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>消费者或者服务治理中心获取注册信息后会做本地缓存。内存中会有一份，保存在Properties对象里，磁盘里也会有一份文件，通过file对象引用。在AbstractRegistry抽象类中有如下定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**  本地缓存对象 **&#x2F;</span><br><span class="line">private final Properties properties &#x3D; new Properties();</span><br><span class="line">&#x2F;** 磁盘文件服务缓存对象 **&#x2F;</span><br><span class="line">private File file;</span><br><span class="line">&#x2F;** 内存中的服务缓存对象 **&#x2F;</span><br><span class="line">private final ConcurrentMap&lt;URL, Map&lt;String, List&lt;URL&gt;&gt;&gt; notified &#x3D; new ConcurrentHashMap&lt;URL, Map&lt;String, List&lt;URL&gt;&gt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>其中内存中的缓存notified是ConcurrentHashMap里面又封装了一个Map，外层Map的key是消费者的URL，内层Map的key是分类，包含了providers、consumers、routers、configutators四种，value则对应的服务列表，对于没有服务提供者提供服务的URL，它会以特殊的empty://前缀了开头。</p>
+<h5 id="zookeeper缓存的加载"><a href="#zookeeper缓存的加载" class="headerlink" title="zookeeper缓存的加载"></a>zookeeper缓存的加载</h5><p>在服务初始化时候，AbstractRegistry构造器函数里会从本地磁盘文件中把持久化的注册数据到Properties对象里，并加载到内存缓存中，核心代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">private void loadProperties() &#123;</span><br><span class="line">       if (file !&#x3D; null &amp;&amp; file.exists()) &#123;</span><br><span class="line">           InputStream in &#x3D; null;</span><br><span class="line">           try &#123;</span><br><span class="line">               &#x2F;&#x2F; 读取磁盘文件</span><br><span class="line">               in &#x3D; new FileInputStream(file);</span><br><span class="line">               &#x2F;&#x2F; 把数据写入到内存缓存中</span><br><span class="line">               properties.load(in);</span><br><span class="line">               ……</span><br><span class="line">           &#125; catch (Throwable e) &#123;</span><br><span class="line">               ……</span><br><span class="line">           &#125; finally &#123;</span><br><span class="line">               ……</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>Properties保存了所有服务提供者的URL，使用URL#serviceKey()作为key，提供者列表、路由规则列表、配置规则列表等作为value。如果应用在启动过程中注册中心无法连接或岩机，则Dubbo框架会自动通过本地缓存加载Invokers。</p>
+<h5 id="zookeeper缓存的保存与更新"><a href="#zookeeper缓存的保存与更新" class="headerlink" title="zookeeper缓存的保存与更新"></a>zookeeper缓存的保存与更新</h5><p>缓存的保存有同步和异步两种方式。异步会使用线程池异步保存，如果线程在执行过程中出现异常，则会再次调用线程池不断重试，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if(syncSaveFile)&#123;</span><br><span class="line">    &#x2F;&#x2F; 同步保存</span><br><span class="line">    doSaveProperties(version);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F; 异步保存,放入线程池。会传入一个AtomicLong的版本号保证数据是最新的</span><br><span class="line">    registryCacheExecutor.execute(new SaveProperties(version));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>AbstractRegistry#notify 方法中封装了更新内存和本地文件缓存的逻辑。当客户端第一次订阅获取全量数据的时候，或者后续由于订阅的数据发生变更时，都会调用该方法进行保存。</p>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" data-id="ck9bcajm2000nqt1ubc3565vi" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC/" rel="tag">分布式，RPC</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">Dubbo进阶（三）：SpringBoot整合Dubbo构建分布式服务</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>

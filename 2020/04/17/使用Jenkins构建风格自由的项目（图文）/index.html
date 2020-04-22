@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    使用Jenkins构建风格自由的项目（图文） |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-使用Jenkins构建风格自由的项目（图文）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      使用Jenkins构建风格自由的项目（图文）
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/" class="article-date">
+  <time datetime="2020-04-17T07:26:32.000Z" itemprop="datePublished">2020-04-17</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/CI-CD/">CI/CD</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+    <div class="tocbot"></div>
+
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>之前讲了讲了如何安装Jenkins，如果有需要的朋友可以去了解一下。本文主要讲解如何使用Jenkins<code>构建项目</code>。</p>
+<a id="more"></a>
+
+<p>之前讲了讲了如何安装Jenkins，如果有需要的朋友可以去了解一下。本文主要讲解如何使用Jenkins<code>构建项目</code>。</p>
+<h5 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h5><ul>
+<li>全局工具配置<br><img src="https://img-blog.csdnimg.cn/20190719111946856.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>打开之后会看到一系列的配置，包括<code>JDK</code>、<code>Git</code>、<code>Gradle</code>、<code>Maven</code>、<code>Docker</code>等配置，当然不是所有的都要配置，请按需配置。<br><img src="https://img-blog.csdnimg.cn/20190719112654255.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190719112702661.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190719112711457.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>配置好自己需要的东西之后，点击保存。</li>
+<li>当然，Jenkins还有很多其他的配置选项，读者可自行在Jenkins左侧的系统管理自行挖掘。<h5 id="构建项目"><a href="#构建项目" class="headerlink" title="构建项目"></a>构建项目</h5><img src="https://img-blog.csdnimg.cn/20190719140240623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>创建一个自由风格的项目，如下图所示：<br><img src="https://img-blog.csdnimg.cn/20190719141243649.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>接下来配置源码管理，因为我用github的仓库，所以选择Git，同理如果你是SVN就选SVN。<br><img src="https://img-blog.csdnimg.cn/20190719141714311.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>配置maven，在<code>构建</code>中的<code>增加构建步骤</code>选择<code>Invoke top-level Maven targets</code><br><img src="https://img-blog.csdnimg.cn/20190719141815564.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190719141914511.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>点击构建项目，执行构建<br><img src="https://img-blog.csdnimg.cn/20190719145133404.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>构建成功<br><img src="https://img-blog.csdnimg.cn/20190719145150147.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+</ul>
+<h5 id="过程中遇到的问题及解决方案"><a href="#过程中遇到的问题及解决方案" class="headerlink" title="过程中遇到的问题及解决方案"></a>过程中遇到的问题及解决方案</h5><ul>
+<li>ERROR: Error fetching remote repo ‘origin’<ul>
+<li>分析：没有添加Git证书导致无法从github拉取代码。</li>
+<li>解决方案：在源码管理里添加git的密钥<br><img src="https://img-blog.csdnimg.cn/20190719155848376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190719155733844.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+</ul>
+</li>
+<li>项目构建完成后没有启动成功<ul>
+<li>分析：可能是进程被杀死了。</li>
+<li>解决方案：用<code>screen -d -m java -jar xxx</code>替换 <code>java -jar xxx</code>，screen是一个把进程在执行进程退出后，仍然存活的命令。如果你本地的电脑没有<code>screen</code>，请先使用此命令安装<code>brew install screen</code>。<br><img src="https://img-blog.csdnimg.cn/20190719163438989.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+</ul>
+</li>
+</ul>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/" data-id="ck9bcajn6003rqt1u4g3w0u3j" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CI-CD%EF%BC%8C%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="tag">CI/CD，自动化技术</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+      <a href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/" class="article-nav-link">
+        <strong class="article-nav-caption">前一篇</strong>
+        <div class="article-nav-title">
+          
+            使用Jenkins的流水线（Pipeline）构建项目
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">测试驱动开发(TDD)在微服务中的应用</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>

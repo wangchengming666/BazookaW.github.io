@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    单例模式(Singleton Pattern) |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-单例模式-Singleton-Pattern" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      单例模式(Singleton Pattern)
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F-Singleton-Pattern/" class="article-date">
+  <time datetime="2020-04-17T02:44:05.000Z" itemprop="datePublished">2020-04-17</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>单例模式的定义：Ensure a class has only one instance, and provide a global point of access to it。确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个唯一实例。</p>
+<a id="more"></a>
+
+<ul>
+<li><p>单例模式的定义<br>Ensure a class has only one instance, and provide a global point of access to it。确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个唯一实例。</p>
+</li>
+<li><p>单例模式的通用类图<br><img src="https://img-blog.csdn.net/20181023171228800?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="在这里插入图片描述"></p>
+</li>
+<li><p>单例模式通用代码</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 单例模式通用代码</span><br><span class="line"> * </span><br><span class="line"> * @author cm_wang</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonPattern &#123;</span><br><span class="line"></span><br><span class="line">	private static final SingletonPattern singletonPattern &#x3D; new SingletonPattern();</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 私有的构造方法，为了限制产生多个对象</span><br><span class="line">	private SingletonPattern() &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 通过这个方法获得对象唯一实例</span><br><span class="line">	 * </span><br><span class="line">	 * @return</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public static SingletonPattern getSingleton() &#123;</span><br><span class="line">		return singletonPattern;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>正如上面的代码所述一样，单例模式有两个要素要记得</p>
+<ul>
+<li>私有的构造方法。为了防止系统中出现多个实例，保证该实例的唯一性。</li>
+<li>以自己实例为返回值的静态的公有的方法。外部会通过这个方法来获取该对象的唯一实例。</li>
+</ul>
+</li>
+<li><p>单例模式会根据实例化对象时机的不同分为两种：一种是<code>饿汉式单例</code>，一种是懒<code>汉式单例</code>。饿汉式单例和懒汉式单例的区别是：<code>饿汉式单例在单例类被加载时候，就实例化一个对象交给自己的引用；而懒汉式单例在调用取得实例方法的时候才会实例化对象</code>。</p>
+</li>
+<li><p>饿汉式单例代码，正如<code>单例模式通用代码</code>一样，这里略。</p>
+</li>
+<li><p>懒汉式单例代码</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 懒汉式单例</span><br><span class="line"> * </span><br><span class="line"> * @author cm_wang</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonPattern &#123;</span><br><span class="line"></span><br><span class="line">	private static SingletonPattern singletonPattern;</span><br><span class="line">	</span><br><span class="line">	private SingletonPattern()&#123;&#125;</span><br><span class="line">	</span><br><span class="line">	public static synchronized SingletonPattern getInstance()&#123;</span><br><span class="line">		if(singletonPattern&#x3D;&#x3D;null)&#123;</span><br><span class="line">			singletonPattern &#x3D; new SingletonPattern();</span><br><span class="line">		&#125;</span><br><span class="line">		return singletonPattern;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>细心的小伙伴已经发现<code>getInstance()</code>加了<code>synchronized</code>关键字。是因为在多线程的环境下，单例模式会出现<code>线程不安全</code>的问题，这个时候就需要考虑线程同步。假设线程A执行到<code>singletonPattern = new SingletonPattern();</code>，但是此时没有获取到对象（毕竟对象的实例化是需要实现的），这个时候线程B也在执行，执行到<code>if(singletonPattern==null)</code>，线程B就会判断为<code>true</code>，继续运行下去，这样子就会导致线程A和线程B一下自创建了两个对象，就违背了单例模式的思想，内存中就会存在两个实例。</p>
+<ul>
+<li>双重校验版单例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 双重校验版单例代码</span><br><span class="line"> * </span><br><span class="line"> * @author cm_wang</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonPattern &#123;</span><br><span class="line">	private static SingletonPattern singletonPattern;</span><br><span class="line">	</span><br><span class="line">	private SingletonPattern() &#123;&#125;</span><br><span class="line">	</span><br><span class="line">	public static SingletonPattern getInstance() &#123;</span><br><span class="line">		if(singletonPattern &#x3D;&#x3D; null) &#123;</span><br><span class="line">			synchronized(SingletonPattern.class) &#123;</span><br><span class="line">				if(singletonPattern &#x3D;&#x3D; null) &#123;</span><br><span class="line">					singletonPattern &#x3D; new SingletonPattern();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return singletonPattern;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>单例模式的好处</p>
+<ul>
+<li>因为单例模式会保证内存中只有一个对象，减少内存的开销。</li>
+<li>单例模式无论是饿汉式还是懒汉式，都可以避免频繁的创建和销毁对象，可以提高程序的性能。</li>
+<li>单例模式是支持全局访问的。</li>
+<li>避免对程序的公共资源的占用和浪费。</li>
+</ul>
+</li>
+<li><p><a href="https://segmentfault.com/q/1010000003732558" target="_blank" rel="noopener">枚举实现单例模式</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/dmk877/article/details/50311791?utm_source=blogxgwz0" target="_blank" rel="noopener">拓展</a></p>
+</li>
+</ul>
+<p>参考书籍：</p>
+<ul>
+<li><code>设计模式之禅</code>，<code>Head First设计模式</code></li>
+<li>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</li>
+</ul>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F-Singleton-Pattern/" data-id="ck9bcajnb0047qt1ubz4rhh7s" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%EF%BC%8C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">软件工程，设计模式</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+      <a href="/2020/04/17/JAVA%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/" class="article-nav-link">
+        <strong class="article-nav-caption">前一篇</strong>
+        <div class="article-nav-title">
+          
+            JAVA设计模式之六大设计原则
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/04/17/%E5%AE%89%E8%A3%85Jenkins%E7%9A%84%E8%B6%85%E8%B6%85%E8%B6%85%E8%B6%85%E7%AE%80%E5%8D%95%E7%9A%84%E6%96%B9%E6%B3%95/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">安装Jenkins的超超超超简单的方法</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>

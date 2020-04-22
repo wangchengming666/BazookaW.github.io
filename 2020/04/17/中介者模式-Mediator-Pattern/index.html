@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    中介者模式(Mediator Pattern) |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-中介者模式-Mediator-Pattern" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      中介者模式(Mediator Pattern)
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/17/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-Mediator-Pattern/" class="article-date">
+  <time datetime="2020-04-17T02:44:09.000Z" itemprop="datePublished">2020-04-17</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>中介者模式定义：Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently. 用一个中介对象封装一系列的对象交互，中介者使各个对象不需要显示地相互作用，从而使其耦合松散，而且可以独立的改变他们之间的交互。</p>
+<a id="more"></a>
+
+<ul>
+<li><p>中介者模式定义<br>Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently. 用一个中介对象封装一系列的对象交互，中介者使各个对象不需要显示地相互作用，从而使其耦合松散，而且可以独立的改变他们之间的交互。</p>
+</li>
+<li><p>中介者模式通用类图<br><img src="https://img-blog.csdnimg.cn/2018120314331876.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+</li>
+<li><p>从以上类图可以看到，中介者模式主要有三个角色：</p>
+<ul>
+<li>抽象中介者：抽象中介者角色定义统一的接口，用于各个同事之间的通信。</li>
+<li>中介者实现类：从抽象中介者继承而来，实现抽象中介者中定义的事件方法。从一个同事类接收消息，然后通过消息影响其他同时类。</li>
+<li>同事类：如果一个对象会影响其他的对象，同时也会被其他对象影响，那么这两个对象称为同事类。在类图中，同事类只有一个，这其实是现实的省略，在实际应用中，同事类一般由多个组成，他们之间相互影响，相互依赖。同事类越多，关系越复杂。并且，同事类也可以表现为继承了同一个抽象类的一组实现组成。在中介者模式中，同事类之间必须通过中介者才能进行消息传递。</li>
+</ul>
+</li>
+<li><p>中介者模式通用代码<br>抽象中介者Mediator</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Mediator &#123;</span><br><span class="line"></span><br><span class="line">	protected ConcreteColleague1 c1;</span><br><span class="line">	protected ConcreteColleague2 c2;</span><br><span class="line">	</span><br><span class="line">	public ConcreteColleague1 getC1() &#123;</span><br><span class="line">		return c1;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setC1(ConcreteColleague1 c1) &#123;</span><br><span class="line">		this.c1 &#x3D; c1;</span><br><span class="line">	&#125;</span><br><span class="line">	public ConcreteColleague2 getC2() &#123;</span><br><span class="line">		return c2;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setC2(ConcreteColleague2 c2) &#123;</span><br><span class="line">		this.c2 &#x3D; c2;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public abstract void doSth1();</span><br><span class="line">	public abstract void doSth2();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>抽象同事类Colleague</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Colleague &#123;</span><br><span class="line"></span><br><span class="line">	protected Mediator mediator;</span><br><span class="line"></span><br><span class="line">	public Colleague(Mediator _mediator) &#123;</span><br><span class="line">		this.mediator &#x3D; _mediator;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体中介者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteMediator extends Mediator&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void doSth1() &#123;</span><br><span class="line">		super.c1.selfMethod1();</span><br><span class="line">		super.c2.selfMethod2();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void doSth2() &#123;</span><br><span class="line">		super.c1.selfMethod1();</span><br><span class="line">		super.c2.selfMethod2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体同事类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteColleague1 extends Colleague &#123;</span><br><span class="line"></span><br><span class="line">	public ConcreteColleague1(Mediator _mediator) &#123;</span><br><span class="line">		super(_mediator);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void selfMethod1() &#123;</span><br><span class="line">		&#x2F;&#x2F;TODO</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void depMethod1() &#123;</span><br><span class="line">		super.mediator.doSth1();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteColleague2 extends Colleague &#123;</span><br><span class="line"></span><br><span class="line">	public ConcreteColleague2(Mediator _mediator) &#123;</span><br><span class="line">		super(_mediator);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void selfMethod2() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void depMethod2() &#123;</span><br><span class="line">		super.mediator.doSth2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>中介者模式实例类图</li>
+</ul>
+<p>相比有很多男生都喜欢金庸的武侠小说吧，笔者也不例外。江湖中门派众多，总会有一些小喽啰偷学少林绝学去做一些见不得人的勾当。前段时间武当派和峨眉派的的弟子被大力金刚指所杀，大力金刚指是少林派的绝学，自古有天下武功出少林的没说，大家自然也不敢轻举妄动。这个时候大家推举出了德高望重的武林盟主，作为江湖的中间人，一旦有什么不和谐的地方，由武林盟主出面进行沟通，其实这个例子就符合中介者模式。</p>
+<p><img src="https://img-blog.csdnimg.cn/20181203153700547.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>中介者模式实例代码<br>抽象中介者类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class WulinAlliance &#123;</span><br><span class="line"></span><br><span class="line">	abstract void notice(String message, United united);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>抽象同事类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public abstract class United &#123;</span><br><span class="line"></span><br><span class="line">	protected WulinAlliance wulinAlliance;</span><br><span class="line"></span><br><span class="line">	public United(WulinAlliance wulinAlliance) &#123;</span><br><span class="line">		this.wulinAlliance &#x3D; wulinAlliance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体同事类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Wudang extends United &#123;</span><br><span class="line">	public Wudang(WulinAlliance wulinAlliance) &#123;</span><br><span class="line">		super(wulinAlliance);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void sendAlliance(String message) &#123;</span><br><span class="line">		wulinAlliance.notice(message, this);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void getNotice(String message) &#123;</span><br><span class="line">		System.out.println(&quot;武当收到消息：&quot; + message);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Shaolin extends United &#123;</span><br><span class="line">	public Shaolin(WulinAlliance wulinAlliance) &#123;</span><br><span class="line">		super(wulinAlliance);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void sendAlliance(String message) &#123;</span><br><span class="line">		wulinAlliance.notice(message, Shaolin.this);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void getNotice(String message) &#123;</span><br><span class="line">		System.out.println(&quot;少林收到消息：&quot; + message);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Emei extends United &#123;</span><br><span class="line">    public Emei(WulinAlliance wulinAlliance) &#123;</span><br><span class="line">        super(wulinAlliance);</span><br><span class="line">    &#125;</span><br><span class="line">    public void sendAlliance(String message) &#123;</span><br><span class="line">        wulinAlliance.notice(message, Emei.this);</span><br><span class="line">    &#125;</span><br><span class="line">    public void getNotice(String message) &#123;</span><br><span class="line">        System.out.println(&quot;峨眉收到消息：&quot; + message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体中介者类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public class Champions extends WulinAlliance &#123;</span><br><span class="line">	private Wudang wudang;</span><br><span class="line">	private Shaolin shaolin;</span><br><span class="line">	private Emei emei;</span><br><span class="line"></span><br><span class="line">	public void setWudang(Wudang wudang) &#123;</span><br><span class="line">		this.wudang &#x3D; wudang;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setEmei(Emei emei) &#123;</span><br><span class="line">		this.emei &#x3D; emei;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setShaolin(Shaolin shaolin) &#123;</span><br><span class="line">		this.shaolin &#x3D; shaolin;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void notice(String message, United united) &#123;</span><br><span class="line">		if (united &#x3D;&#x3D; wudang) &#123;</span><br><span class="line">			shaolin.getNotice(message);</span><br><span class="line">		&#125; else if (united &#x3D;&#x3D; emei) &#123;</span><br><span class="line">			shaolin.getNotice(message);</span><br><span class="line">		&#125; else if (united &#x3D;&#x3D; shaolin) &#123;</span><br><span class="line">			wudang.getNotice(message);</span><br><span class="line">			emei.getNotice(message);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>客户端调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Champions champions &#x3D; new Champions();</span><br><span class="line">		Wudang wudang &#x3D; new Wudang(champions);</span><br><span class="line">		Shaolin shaolin &#x3D; new Shaolin(champions);</span><br><span class="line">		Emei emei &#x3D; new Emei(champions);</span><br><span class="line">		champions.setWudang(wudang);</span><br><span class="line">		champions.setShaolin(shaolin);</span><br><span class="line">		champions.setEmei(emei);</span><br><span class="line">		wudang.sendAlliance(&quot;武当弟子被少林大力金刚指所杀&quot;);</span><br><span class="line">		emei.sendAlliance(&quot;峨眉弟子被少林大力金刚指所杀&quot;);</span><br><span class="line">		shaolin.sendAlliance(&quot;少林弟子绝不会做出这种事情&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">少林收到消息：武当弟子被少林大力金刚指所杀</span><br><span class="line">少林收到消息：峨眉弟子被少林大力金刚指所杀</span><br><span class="line">武当收到消息：少林弟子绝不会做出这种事情</span><br><span class="line">峨眉收到消息：少林弟子绝不会做出这种事情</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>中介者模式的优点<ul>
+<li>符合迪米特原则，将原有的一对多的依赖变成了一对一的依赖，降低类间的耦合。</li>
+<li>使用中介者模式可以将对象的行为和协作进行抽象，能够比较灵活的处理对象间的相互作用。</li>
+</ul>
+</li>
+<li>中介者模式的适用场景<ul>
+<li>系统中对象之间存在比较复杂的引用关系，导致他们之间的依赖关系结构混乱而且难以复用该对象。</li>
+<li>想通过一个中间类来封装多个类中的行为，而又不想生成太多的子类。</li>
+</ul>
+</li>
+</ul>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-Mediator-Pattern/" data-id="ck9bcajn3003eqt1u76ed4zkt" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%EF%BC%8C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">软件工程，设计模式</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+      <a href="/2020/04/17/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F-Chain-of-Responsibility-Pattern/" class="article-nav-link">
+        <strong class="article-nav-caption">前一篇</strong>
+        <div class="article-nav-title">
+          
+            责任链模式(Chain of Responsibility Pattern)
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/04/17/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F-Proxy-Pattern/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">代理模式(Proxy Pattern)</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>

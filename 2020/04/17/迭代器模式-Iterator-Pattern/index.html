@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    迭代器模式(Iterator Pattern) |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-迭代器模式-Iterator-Pattern" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      迭代器模式(Iterator Pattern)
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/17/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F-Iterator-Pattern/" class="article-date">
+  <time datetime="2020-04-17T05:55:20.000Z" itemprop="datePublished">2020-04-17</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>迭代器模式定义<br>相比大家对迭代器并不陌生，我们常用的List，Map都有这个概念。迭代器模式的定义为：Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation. 提供一种方法访问一个容器对象中各个元素，而不是需要暴露该对象的内部细节。</p>
+<a id="more"></a>
+
+<ul>
+<li><p>迭代器模式定义<br>相比大家对迭代器并不陌生，我们常用的List，Map都有这个概念。迭代器模式的定义为：Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation. 提供一种方法访问一个容器对象中各个元素，而不是需要暴露该对象的内部细节。</p>
+</li>
+<li><p>迭代器模式通用类图</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20181225151657987.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li>根据上面的类图可以看到迭代器模式的四个角色：<ul>
+<li>抽象容器：一般是一个接口，提供一个iterator()方法，例如java中的Collection接口，List接口，Set接口等。</li>
+<li>具体容器：就是抽象容器的具体实现类，比如List接口的有序列表实现ArrayList，List接口的链表实现LinkList，Set接口的哈希列表的实现HashSet等。</li>
+<li>抽象迭代器：定义遍历元素所需要的方法，一般来说会有这么三个方法：取得第一个元素的方法first()，取得下一个元素的方法next()，判断是否遍历结束的方法isDone()（或者叫hasNext()），移出当前对象的方法remove(),</li>
+<li>迭代器实现：实现迭代器接口中定义的方法，完成集合的迭代。</li>
+</ul>
+</li>
+<li>迭代器模式通用代码</li>
+</ul>
+<p>抽象迭代器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface Iterator &#123;</span><br><span class="line"></span><br><span class="line">	public Object next();</span><br><span class="line">	</span><br><span class="line">	public boolean hasNext();</span><br><span class="line">	</span><br><span class="line">	public boolean remove();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体迭代器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteIterator implements Iterator &#123;</span><br><span class="line"></span><br><span class="line">	private List list &#x3D; new ArrayList();</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 当前游标</span><br><span class="line">	public int cursor &#x3D; 0;</span><br><span class="line"></span><br><span class="line">	public ConcreteIterator(List list) &#123;</span><br><span class="line">		this.list &#x3D; list;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public Object next() &#123;</span><br><span class="line">		Object obj &#x3D; null;</span><br><span class="line">		if (this.hasNext()) &#123;</span><br><span class="line">			obj &#x3D; this.list.get(cursor++);</span><br><span class="line">		&#125;</span><br><span class="line">		return obj;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public boolean hasNext() &#123;</span><br><span class="line">		if (cursor &#x3D;&#x3D; list.size()) &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public boolean remove() &#123;</span><br><span class="line">		this.list.remove(this.cursor);</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface Aggregate &#123;</span><br><span class="line"></span><br><span class="line">	public void add(Object obj);</span><br><span class="line"></span><br><span class="line">	public void remove(Object obj);</span><br><span class="line"></span><br><span class="line">	public Iterator iterator();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteAggregate implements Aggregate &#123;</span><br><span class="line"></span><br><span class="line">	private List list &#x3D; new ArrayList();</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void add(Object obj) &#123;</span><br><span class="line">		list.add(obj);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public Iterator iterator() &#123;</span><br><span class="line">		return new ConcreteIterator(list);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void remove(Object obj) &#123;</span><br><span class="line">		list.remove(obj);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Aggregate ag &#x3D; new ConcreteAggregate();</span><br><span class="line">		ag.add(&quot;小明&quot;);</span><br><span class="line">		ag.add(&quot;小红&quot;);</span><br><span class="line">		ag.add(&quot;小刚&quot;);</span><br><span class="line">		Iterator it &#x3D; ag.iterator();</span><br><span class="line">		while (it.hasNext()) &#123;</span><br><span class="line">			String str &#x3D; (String) it.next();</span><br><span class="line">			System.out.println(str);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>迭代器模式优缺点</p>
+<ul>
+<li>其实迭代器的核心思想是<code>将数据结构和操作数据结构的算法分离开</code>。</li>
+<li>封装性良好，用户只需要得到迭代器就可以遍历，而对于遍历算法则不用去关心。</li>
+<li>可以提供多种遍历方式。</li>
+</ul>
+</li>
+<li><p>迭代器模式适用场景</p>
+</li>
+</ul>
+<p>其实在java中已经提供了一套完善的迭代器（Iterator），Collection、List、Set、Map等，这些集合都有自己的迭代器。我们不必要去手写迭代器，java自带的Iterator就已经满足需求了。说白了，正是因为集合和迭代器结合的太密切了，在实际开发中，我们自己去实践迭代器模式的场景还是比较少见的，我们只需要使用语言中已有的容器和迭代器就可以了。</p>
+<p>参考书籍：<code>设计模式之禅</code><br>实例代码放在<a href="https://github.com/BazookaW/DesignPattern" target="_blank" rel="noopener">这里</a>。</p>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F-Iterator-Pattern/" data-id="ck9bcajo1006kqt1ufz5p9y4i" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%EF%BC%8C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">软件工程，设计模式</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+      <a href="/2020/04/17/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F-Observer-Pattern/" class="article-nav-link">
+        <strong class="article-nav-caption">前一篇</strong>
+        <div class="article-nav-title">
+          
+            观察者模式(Observer Pattern)
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/04/17/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F-Strategy-Pattern/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">策略模式(Strategy Pattern)</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>

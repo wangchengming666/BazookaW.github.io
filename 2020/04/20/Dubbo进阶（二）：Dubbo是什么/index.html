@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    Dubbo进阶（二）：Dubbo是什么 |
+    
+    Wry</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-Dubbo进阶（二）：Dubbo是什么" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      Dubbo进阶（二）：Dubbo是什么
+    </h1>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" class="article-date">
+  <time datetime="2020-04-20T01:32:42.000Z" itemprop="datePublished">2020-04-20</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+                            
+    <div class="tocbot"></div>
+
+
+
+
+
+                                
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                                    <p>在当今微服务盛行的大环境下，设计一套高并发、高可扩展、自动容错和高可用的分布式系统无疑是离不开一套优秀的<code>RPC</code>框架的。<code>Dubbo</code>是阿里开源的<code>RPC</code>框架，在市场上众多<code>RPC</code>框架中是最受欢迎的，各大公司也都争相拥抱和使用。</p>
+<a id="more"></a>
+
+<p>在当今微服务盛行的大环境下，设计一套高并发、高可扩展、自动容错和高可用的分布式系统无疑是离不开一套优秀的<code>RPC</code>框架的。<code>Dubbo</code>是阿里开源的<code>RPC</code>框架，在市场上众多<code>RPC</code>框架中是最受欢迎的，各大公司也都争相拥抱和使用。</p>
+<h5 id="Dubbo的架构图"><a href="#Dubbo的架构图" class="headerlink" title="Dubbo的架构图"></a>Dubbo的架构图</h5><p><img src="https://img-blog.csdnimg.cn/20200415143110190.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>图片来自<a href="http://dubbo.apache.org/zh-cn/docs/user/quick-start.html" target="_blank" rel="noopener">Dubbo官网</a>，各个角色说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>角色说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Provider</td>
+<td>暴露服务的服务提供方</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>服务运行容器</td>
+</tr>
+<tr>
+<td>Consumer</td>
+<td>调用远程服务的服务消费方</td>
+</tr>
+<tr>
+<td>Registry</td>
+<td>服务注册与发现的注册中心</td>
+</tr>
+<tr>
+<td>Monitor</td>
+<td>统计服务的调用次数和调用时间的监控中心</td>
+</tr>
+<tr>
+<td>Provider</td>
+<td>在启动的时候会向注册中心注册元数据（IP/端口之类的），Consumer在启动的时候会向注册中心订阅（第一次订阅会拉去全部数据）服务方的元数据，注册中心发生数据变化的时候，会推送给订阅的Consumer。在获取到服务方的元数据之后可以进行<code>RPC</code>调用，在<code>RPC</code>调用后会向监控中心上报统计信息（比如并发数和调用的接口），开发人员可以在监控中心看到服务的调用情况。</td>
+</tr>
+</tbody></table>
+<h5 id="Dubbo的分层和核心组件"><a href="#Dubbo的分层和核心组件" class="headerlink" title="Dubbo的分层和核心组件"></a>Dubbo的分层和核心组件</h5><p><img src="https://img-blog.csdnimg.cn/20200420082736740.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>核心组件如下：</p>
+<table>
+<thead>
+<tr>
+<th>层次明</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Service</td>
+<td>业务层。即我们实现的业务代码。</td>
+</tr>
+<tr>
+<td>config</td>
+<td>配置层。主要围绕ServiceConfig（暴露服务的位置）和ReferenceConfig（引用的服务位置）两个实现类展开，初始化配置信息。可以理解为该层管理了整个Dubbo的配置。</td>
+</tr>
+<tr>
+<td>proxy</td>
+<td>服务代理层。在Dubbo中，无论生产者还是消费者，框架都会生成一个代理类，整个过程对上层是透明的。当调用一个远程接口时就像是调用本地的接口一样，代理程会自动发起远程调用并返回结果，让业务层对远程调用完全无感。</td>
+</tr>
+<tr>
+<td>registry</td>
+<td>注册层。负责Dubbo框架的服务注册和发现。当有新的服务加入或者旧的服务下线时，注册中心都会感知并通知给所有的订阅方，整个过程不需要人工参与。</td>
+</tr>
+<tr>
+<td>cluster</td>
+<td>集群容错层。主要负责远程调用失败时的容错策略（重试失败，快速失败等）。选择具体节点调用时的负载均衡策略（如随机，一致性Hash等），特殊调用路径的路由策略（如某个消费者只会条用某个IP的生产者）。</td>
+</tr>
+<tr>
+<td>monitor</td>
+<td>控制层。主要负责监控统计调用次数和时间等。</td>
+</tr>
+<tr>
+<td>protocol</td>
+<td>远程调用层。封装RPC调用具体过程，Protocol是Invoker暴露（发布一个服务让别人可以调用）和引用（应用一个远程服务到本地）的主功能入口，它负责管理Invoker的整个生命周期。Invoker是Dubbo的核心模型，框架中所有的其他模型都向它靠拢，或者转换成它，它代表一个可执行体。允许向他发起invoke调动，它可能是执行一个本地的接口实现，也可能是一个远程调用，还可能是一个集群实现。</td>
+</tr>
+<tr>
+<td>exchange</td>
+<td>信息交换层。建立Request-Response模型，封装请求响应模式，如把同步请求转换成异步请求。</td>
+</tr>
+<tr>
+<td>transport</td>
+<td>网络传输层。把网络传输抽象为同一接口，如Mina和Netty虽然接口不一样，但是Dubbo在它们上面又封装了同一接口。用户也可以根据其他扩展接口添加更多的网络传输方式。</td>
+</tr>
+<tr>
+<td>Serialize</td>
+<td>序列化层。如果数据通过网络进行发送，则需要先做序列化，编程二进制流。序列化层负责管理整个框架网络传输时的序列化/反序列化工作。</td>
+</tr>
+</tbody></table>
+<h5 id="Dubbo总体调用过程"><a href="#Dubbo总体调用过程" class="headerlink" title="Dubbo总体调用过程"></a>Dubbo总体调用过程</h5><p><img src="https://img-blog.csdnimg.cn/20200420091712719.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdjaGVuZ21pbmcx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ol>
+<li>首先是从一个Proxy开始，Proxy持有一个Invoker对象，然后触发invoke调用。</li>
+<li>在invoke调用过程中，需要使用Cluster，Cluster负责容错，如果调用失败的则重试。Cluster在调用之前会通过Directory获取所有可以调用的远程服务Invoker列表。</li>
+<li>然后通过负载均衡选取一个可以调用的Invoker。这个Invoker在调用之前会经过一个过滤链，通常为处理上下文、限流、计数等。</li>
+<li>接下来通过client做数据传输，如常见的Netty Client。在传输之前需要做一些私有协议的构造，此时就会用到Codec接口。构造完成之后，就对数据包做序列化然后传送到服务提供者端。服务提供者收到数据包，也会使用Codec处理协议头及一些半包、粘包等。处理好之后再对完整的数据报文做反序列化处理。</li>
+<li>随后这个Request被分配到线程池中进行处理。Server会处理这些Request，根据请求找到对应的Exporter（它内部持有了Invoker）。</li>
+<li>最后得到了接口的真实实现并调用，再原路返回调用结果。</li>
+</ol>
+<p>以上就是一个完整的远程调用过程。</p>
+
+                                                                        
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" data-id="ck9bcajm1000kqt1u5afuaauh" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC/" rel="tag">分布式，RPC</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+        
+  <nav class="article-nav">
+    
+      <a href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" class="article-nav-link">
+        <strong class="article-nav-caption">前一篇</strong>
+        <div class="article-nav-title">
+          
+            Dubbo进阶（三）：SpringBoot整合Dubbo构建分布式服务
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">Dubbo进阶（一）：RPC和RESTful</div>
+      </a>
+    
+  </nav>
+
+
+            
+
+                
+                    
+                        
+                            
+
+</article>
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2020 Wry</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/favicon.ico" alt="Wry"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">首页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/category">分类</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+
+</body>
+</html>
