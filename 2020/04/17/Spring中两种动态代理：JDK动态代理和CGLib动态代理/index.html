@@ -151,7 +151,7 @@
                                                                         
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/Spring%E4%B8%AD%E4%B8%A4%E7%A7%8D%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%EF%BC%9AJDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8CCGLib%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" data-id="ck9bclguu002pst1ucv33198t" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/Spring%E4%B8%AD%E4%B8%A4%E7%A7%8D%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%EF%BC%9AJDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8CCGLib%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" data-id="ck9bdm1ww002oxf1u4gj5f9r1" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -188,6 +188,32 @@
                 
                     
                         
+  <div class="gitalk" id="gitalk-container"></div>
+  
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+  
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'be70659acff52f38821f',
+      clientSecret: '8228fce38aef9a1008b3bae7cefa46980cfa8d5c',
+      repo: 'https://wry1610.com/',
+      owner: 'BazookaW',
+      admin: ['BazookaW'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
+
+  gitalk.render('gitalk-container')
+  </script>
+
                             
 
 </article>

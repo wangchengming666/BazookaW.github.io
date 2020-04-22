@@ -177,7 +177,7 @@
                                                                         
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" data-id="ck9bclgu0000ist1u8lpub5op" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" data-id="ck9bdm1w4000kxf1u2tg17upa" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -214,6 +214,32 @@
                 
                     
                         
+  <div class="gitalk" id="gitalk-container"></div>
+  
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+  
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'be70659acff52f38821f',
+      clientSecret: '8228fce38aef9a1008b3bae7cefa46980cfa8d5c',
+      repo: 'https://wry1610.com/',
+      owner: 'BazookaW',
+      admin: ['BazookaW'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
+
+  gitalk.render('gitalk-container')
+  </script>
+
                             
 
 </article>

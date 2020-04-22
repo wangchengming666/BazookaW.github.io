@@ -165,7 +165,7 @@
                                                                         
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/Spring-Cloud-%E7%86%94%E6%96%AD%EF%BC%88Hystrix%EF%BC%89/" data-id="ck9bclguk0024st1u7auhgznr" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/Spring-Cloud-%E7%86%94%E6%96%AD%EF%BC%88Hystrix%EF%BC%89/" data-id="ck9bdm1wr0026xf1udnmx6sqs" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -202,6 +202,32 @@
                 
                     
                         
+  <div class="gitalk" id="gitalk-container"></div>
+  
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+  
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'be70659acff52f38821f',
+      clientSecret: '8228fce38aef9a1008b3bae7cefa46980cfa8d5c',
+      repo: 'https://wry1610.com/',
+      owner: 'BazookaW',
+      admin: ['BazookaW'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
+
+  gitalk.render('gitalk-container')
+  </script>
+
                             
 
 </article>

@@ -131,7 +131,7 @@
                                                                         
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/MySQL%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ck9bclgua001bst1u5p156zor" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/MySQL%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ck9bdm1wf001dxf1u1z0z2qoo" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -168,6 +168,32 @@
                 
                     
                         
+  <div class="gitalk" id="gitalk-container"></div>
+  
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+  
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+  
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'be70659acff52f38821f',
+      clientSecret: '8228fce38aef9a1008b3bae7cefa46980cfa8d5c',
+      repo: 'https://wry1610.com/',
+      owner: 'BazookaW',
+      admin: ['BazookaW'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
+
+  gitalk.render('gitalk-container')
+  </script>
+
                             
 
 </article>
