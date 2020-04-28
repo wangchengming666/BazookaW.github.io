@@ -78,6 +78,9 @@
 
                                                 
                                                                     <p><code>Dubbo</code>的扩展点加载机制类似于<code>Java</code>的<code>SPI</code>加载机制，但是<code>Java</code>的<code>SPI</code>加载机制在查找具体某个实现的时候，只能通过遍历进行查找并会实例化所有实现类，因此对于实际不需要加载的扩展实现也会实例化，造成一定的内存浪费。<code>Dubbo SPI</code>加载机制可通过扩展点名称进行查找，避免实例化所有实现；同时，增加了对扩展点IoC和AOP的支持，一个扩展点实现可以注入其他扩展点实现并进行<code>Wrapper</code>包装。</p>
+<a id="more"></a>
+
+<p><code>Dubbo</code>的扩展点加载机制类似于<code>Java</code>的<code>SPI</code>加载机制，但是<code>Java</code>的<code>SPI</code>加载机制在查找具体某个实现的时候，只能通过遍历进行查找并会实例化所有实现类，因此对于实际不需要加载的扩展实现也会实例化，造成一定的内存浪费。<code>Dubbo SPI</code>加载机制可通过扩展点名称进行查找，避免实例化所有实现；同时，增加了对扩展点IoC和AOP的支持，一个扩展点实现可以注入其他扩展点实现并进行<code>Wrapper</code>包装。</p>
 <p>在了解<code>Dubbo SPI</code>机制之前我们先了解一下<code>Java</code>的<code>SPI</code>机制。</p>
 <h5 id="Java-SPI"><a href="#Java-SPI" class="headerlink" title="Java SPI"></a>Java SPI</h5><p>以MySQL数据库驱动为例，来看一下<code>Java SPI</code>是如何实现的。</p>
 <p>首先，MySQL软件驱动包在META-INF/services目录下创建了<code>java.sql.Driver</code>文件</p>
@@ -157,7 +160,7 @@
                                                                         
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" data-id="ck9jbni8k000gzuhp8cold6q5" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" data-id="ck9jjtmon000eu0hphoqhe7pj" class="article-share-link">
                                             分享
                                         </a>
                                         
