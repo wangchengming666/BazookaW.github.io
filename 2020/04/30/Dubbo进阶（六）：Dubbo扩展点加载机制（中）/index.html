@@ -7,6 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>
+    Dubbo进阶（六）：Dubbo扩展点加载机制（中） |
     
     Wry&#39;s blog</title>
   
@@ -27,45 +28,17 @@
 
 <body>
 <main class="content">
-  <section class="jumbotron">
-  <div class="video">
-    
-      <div class="video-frame">
-        <img src="/images/ocean/overlay-hero.png" alt="Decorative image frame">
-      </div>
-    
-    <div class="video-media">
-      <img src="/images/IMG_4964.JPG"></img>
-      <div class="video-overlay"></div>
-    </div>
-    <div class="video-inner text-center text-white">
-      <h1><a href="/">Wry&#39;s blog</a></h1>
-      <p></p>
-      <div><img src="/images/favicon 2.ico" class="brand" alt="Wry&#39;s blog"></div>
-    </div>
-    <div class="video-learn-more">
-      <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
-    </div>
-  </div>
-</section>
-
-<div id="landingpage">
   <section class="outer">
-    <article class="articles">
-      
-      <h1 class="page-type-title"></h1>
-      
-        
-          <article id="post-Dubbo进阶（六）：Dubbo扩展点加载机制（中）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  <article id="post-Dubbo进阶（六）：Dubbo扩展点加载机制（中）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
     <div class="article-inner">
         
             <header class="article-header">
                 
   
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/30/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%AD%EF%BC%89/">Dubbo进阶（六）：Dubbo扩展点加载机制（中）</a>
-    </h2>
+    <h1 class="article-title" itemprop="name">
+      Dubbo进阶（六）：Dubbo扩展点加载机制（中）
+    </h1>
   
   
 
@@ -85,6 +58,14 @@
                     
 
                         
+                            
+    <div class="tocbot"></div>
+
+
+
+
+
+                                
 
                                     <div class="article-entry" itemprop="articleBody">
                                         
@@ -184,615 +165,61 @@
     </div>
 
     
-
-                
-
-</article>
         
-          <article id="post-Dubbo进阶（五）：Dubbo扩展点加载机制（上）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/">Dubbo进阶（五）：Dubbo扩展点加载机制（上）</a>
-    </h2>
-  
-  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" class="article-nav-link">
+        <strong class="article-nav-caption">后一篇</strong>
+        <div class="article-nav-title">Dubbo进阶（五）：Dubbo扩展点加载机制（上）</div>
+      </a>
+    
+  </nav>
 
 
-
-
-            </header>
             
 
                 
-                    <div class="article-meta">
-                        <a href="/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" class="article-date">
-  <time datetime="2020-04-28T02:57:26.000Z" itemprop="datePublished">2020-04-28</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
-  </div>
-
-                    </div>
                     
-
                         
+  <div class="gitalk" id="gitalk-container"></div>
+  
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
 
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
+  
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
 
-                                            
+  
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
 
-                                                
-                                                    <p><code>Dubbo</code>的扩展点加载机制类似于<code>Java</code>的<code>SPI</code>加载机制，但是<code>Java</code>的<code>SPI</code>加载机制在查找具体某个实现的时候，只能通过遍历进行查找并会实例化所有实现类，因此对于实际不需要加载的扩展实现也会实例化，造成一定的内存浪费。<code>Dubbo SPI</code>加载机制可通过扩展点名称进行查找，避免实例化所有实现；同时，增加了对扩展点IoC和AOP的支持，一个扩展点实现可以注入其他扩展点实现并进行<code>Wrapper</code>包装。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" data-id="ck9m8ia6x000romhp00zg5ppq" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC%EF%BC%8CDubbo/" rel="tag">分布式，RPC，Dubbo</a></li></ul>
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'dc4bc5e8db8ad0c02feb',
+      clientSecret: 'e34658b398507219c612f0217783e96033c4cd4b',
+      repo: 'BazookaW.github.io',
+      owner: 'BazookaW',
+      admin: ['BazookaW'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
 
-                                    </footer>
+  gitalk.render('gitalk-container')
+  </script>
 
-    </div>
-
-    
-
-                
+                            
 
 </article>
-        
-          <article id="post-Dubbo进阶（四）：Dubbo注册中心" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">Dubbo进阶（四）：Dubbo注册中心</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" class="article-date">
-  <time datetime="2020-04-22T03:18:00.000Z" itemprop="datePublished">2020-04-22</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>在Dubbo微服务体系中，注册中心是其核心的组件之一。Dubbo通过注册中心实现了分布式环境中各服务之间的注册与发现，是各个分布式节点之间的纽带。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" data-id="ck9m8ia6z000xomhpgjqp7d39" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC/" rel="tag">分布式，RPC</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-Dubbo进阶（三）：SpringBoot整合Dubbo构建分布式服务" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/">Dubbo进阶（三）：SpringBoot整合Dubbo构建分布式服务</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" class="article-date">
-  <time datetime="2020-04-21T15:24:32.000Z" itemprop="datePublished">2020-04-21</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p><code>Dubbo</code>官方文档中提到有三种方式来开发<code>Dubbo</code>的应用程序，分别是：基于XML配置实现；继续注解实现（常用 / 推荐）；基于API实现。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" data-id="ck9m8ia6u000jomhpfvfjavvg" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC/" rel="tag">分布式，RPC</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-Dubbo进阶（二）：Dubbo是什么" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/">Dubbo进阶（二）：Dubbo是什么</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" class="article-date">
-  <time datetime="2020-04-20T01:32:42.000Z" itemprop="datePublished">2020-04-20</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>在当今微服务盛行的大环境下，设计一套高并发、高可扩展、自动容错和高可用的分布式系统无疑是离不开一套优秀的<code>RPC</code>框架的。<code>Dubbo</code>是阿里开源的<code>RPC</code>框架，在市场上众多<code>RPC</code>框架中是最受欢迎的，各大公司也都争相拥抱和使用。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" data-id="ck9m8ia6v000momhpfdvl0yzm" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC/" rel="tag">分布式，RPC</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-Dubbo进阶（一）：RPC和RESTful" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/">Dubbo进阶（一）：RPC和RESTful</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/" class="article-date">
-  <time datetime="2020-04-17T07:40:30.000Z" itemprop="datePublished">2020-04-17</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>想要比较清楚的了解<code>RPC</code>和<code>RESTful</code>的区别，我们先来了解一下网络的七层模型。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/" data-id="ck9m8ia6r000comhphrlcfupd" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC/" rel="tag">分布式，RPC</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-使用Jenkins的流水线（Pipeline）构建项目" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/">使用Jenkins的流水线（Pipeline）构建项目</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/" class="article-date">
-  <time datetime="2020-04-17T07:26:33.000Z" itemprop="datePublished">2020-04-17</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/CI-CD/">CI/CD</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p><code>Jenkins 2.x</code> 内置了强大的流水线功能，真的比传统的构建项目的方法方便了好多。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/" data-id="ck9m8ia82003yomhp7v12cl8t" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CI-CD%EF%BC%8C%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="tag">CI/CD，自动化技术</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-使用Jenkins构建风格自由的项目（图文）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/">使用Jenkins构建风格自由的项目（图文）</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/" class="article-date">
-  <time datetime="2020-04-17T07:26:32.000Z" itemprop="datePublished">2020-04-17</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/CI-CD/">CI/CD</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>之前讲了讲了如何安装Jenkins，如果有需要的朋友可以去了解一下。本文主要讲解如何使用Jenkins<code>构建项目</code>。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/" data-id="ck9m8ia81003vomhp5j2t434x" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CI-CD%EF%BC%8C%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="tag">CI/CD，自动化技术</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-测试驱动开发-TDD-在微服务中的应用" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">测试驱动开发(TDD)在微服务中的应用</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" class="article-date">
-  <time datetime="2020-04-17T07:22:53.000Z" itemprop="datePublished">2020-04-17</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD/">测试驱动开发(TDD)</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>在上一篇文章中用一个计算长方形面积的小例子介绍了如何使用TDD，感兴趣的小伙伴可以去阅读一下，今天主要介绍TDD是如何应用在微服务中的。我们还是先来回归一下TDD的三条实践准则。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" data-id="ck9m8ia8l005gomhphnj81o4w" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%EF%BC%8CTDD/" rel="tag">敏捷开发，TDD</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-测试驱动开发-TDD-实战体验" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/">测试驱动开发(TDD)实战体验</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/" class="article-date">
-  <time datetime="2020-04-17T07:22:52.000Z" itemprop="datePublished">2020-04-17</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD/">测试驱动开发(TDD)</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>今天这篇文章以一个简单的例子来体验一下TDD的过程。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/" data-id="ck9m8ia8m005komhpg925cm1b" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%EF%BC%8CTDD/" rel="tag">敏捷开发，TDD</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-    </article>
-    
-  
-    
-      <nav class="page-nav">
-        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
-      </nav>
-    
-  </section>
-</div>
-
+</section>
   <footer class="footer">
   <div class="outer">
     <div class="float-right">
       <ul class="list-inline">
   
-    <li><i class="fe fe-bar-chart"></i> <span id="busuanzi_value_site_pv"></span></li>
-  
     <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+    <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
   
 </ul>
     </div>
@@ -876,6 +303,23 @@
 
 
 
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
 
 
 
