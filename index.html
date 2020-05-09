@@ -56,6 +56,71 @@
       <h1 class="page-type-title"></h1>
       
         
+          <article id="post-Dubbo进阶（七）：Dubbo扩展点加载机制（下）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2020/05/09/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8B%EF%BC%89/">Dubbo进阶（七）：Dubbo扩展点加载机制（下）</a>
+    </h2>
+  
+  
+
+
+
+
+            </header>
+            
+
+                
+                    <div class="article-meta">
+                        <a href="/2020/05/09/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8B%EF%BC%89/" class="article-date">
+  <time datetime="2020-05-09T10:04:51.000Z" itemprop="datePublished">2020-05-09</time>
+</a>
+                            
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Dubbo/">Dubbo</a>
+  </div>
+
+                    </div>
+                    
+
+                        
+
+                                    <div class="article-entry" itemprop="articleBody">
+                                        
+
+                                            
+
+                                                
+                                                    <p>在上一篇文章<a href="https://blog.csdn.net/wangchengming1/article/details/105814034" target="_blank" rel="noopener">Dubbo进阶（六）：Dubbo扩展点加载机制（中）</a>中介绍了扩展点机制的一些注解，这篇文章主要通过源码来学习一下<code>ExtensionLoader</code>的原理。<code>ExtensionLoader</code>是整个扩展机制的主要逻辑，在这个类里实现了配置的加载、扩展类缓存、自适应对象生成等所有工作。</p>
+                                                        
+                                                            <a class="article-more-link" href="/2020/05/09/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8B%EF%BC%89/">
+                                                                阅读全文...
+                                                            </a>
+                                                            
+                                                                
+                                    </div>
+                                    <footer class="article-footer">
+                                        <a data-url="http://wry1610.com/2020/05/09/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8B%EF%BC%89/" data-id="ck9zgrcy00009evhpf2dvgygi" class="article-share-link">
+                                            分享
+                                        </a>
+                                        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%8CRPC%EF%BC%8CDubbo/" rel="tag">分布式，RPC，Dubbo</a></li></ul>
+
+                                    </footer>
+
+    </div>
+
+    
+
+                
+
+</article>
+        
           <article id="post-Dubbo进阶（六）：Dubbo扩展点加载机制（中）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
     <div class="article-inner">
@@ -105,7 +170,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/30/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%AD%EF%BC%89/" data-id="ck9w4vbqd000i9mhpbb435oiw" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/30/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%AD%EF%BC%89/" data-id="ck9zgrcy6000nevhph8or02lm" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -170,7 +235,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" data-id="ck9w4vbqb000d9mhp2aabavbn" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/28/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ADubbo%E6%89%A9%E5%B1%95%E7%82%B9%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%8A%EF%BC%89/" data-id="ck9zgrcy8000sevhpadgwghj9" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -235,7 +300,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" data-id="ck9w4vbqd000j9mhpf80o7w8k" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/22/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ADubbo%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" data-id="ck9zgrcya000zevhp3izo6oho" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -300,7 +365,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" data-id="ck9w4vbqa000c9mhpdl1l3vgv" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/21/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ASpringBoot%E6%95%B4%E5%90%88Dubbo%E6%9E%84%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1/" data-id="ck9zgrcy5000kevhpciri24td" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -365,7 +430,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" data-id="ck9w4vbq600079mhpgxbd52ak" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/20/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ADubbo%E6%98%AF%E4%BB%80%E4%B9%88/" data-id="ck9zgrcy8000uevhp1yzuf155" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -430,7 +495,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/" data-id="ck9w4vbq700089mhp73fcf955" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/Dubbo%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ARPC%E5%92%8CRESTful/" data-id="ck9zgrcy4000fevhp0umdftbe" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -495,7 +560,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/" data-id="ck9w4vbri00479mhpbviyb1p7" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE/" data-id="ck9zgrczf0047evhphxswg5rk" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -560,7 +625,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/" data-id="ck9w4vbrh00439mhp8bq64euy" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BA%E9%A3%8E%E6%A0%BC%E8%87%AA%E7%94%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%88%E5%9B%BE%E6%96%87%EF%BC%89/" data-id="ck9zgrcze0043evhpbwbcfrc1" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -625,72 +690,7 @@
                                                                 
                                     </div>
                                     <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" data-id="ck9w4vbrz005j9mhp05v76nx0" class="article-share-link">
-                                            分享
-                                        </a>
-                                        
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%EF%BC%8CTDD/" rel="tag">敏捷开发，TDD</a></li></ul>
-
-                                    </footer>
-
-    </div>
-
-    
-
-                
-
-</article>
-        
-          <article id="post-测试驱动开发-TDD-实战体验" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/">测试驱动开发(TDD)实战体验</a>
-    </h2>
-  
-  
-
-
-
-
-            </header>
-            
-
-                
-                    <div class="article-meta">
-                        <a href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/" class="article-date">
-  <time datetime="2020-04-17T07:22:52.000Z" itemprop="datePublished">2020-04-17</time>
-</a>
-                            
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD/">测试驱动开发(TDD)</a>
-  </div>
-
-                    </div>
-                    
-
-                        
-
-                                    <div class="article-entry" itemprop="articleBody">
-                                        
-
-                                            
-
-                                                
-                                                    <p>今天这篇文章以一个简单的例子来体验一下TDD的过程。</p>
-                                                        
-                                                            <a class="article-more-link" href="/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/">
-                                                                阅读全文...
-                                                            </a>
-                                                            
-                                                                
-                                    </div>
-                                    <footer class="article-footer">
-                                        <a data-url="http://wry1610.com/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%AE%9E%E6%88%98%E4%BD%93%E9%AA%8C/" data-id="ck9w4vbs1005r9mhp1won53fn" class="article-share-link">
+                                        <a data-url="http://wry1610.com/2020/04/17/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91-TDD-%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" data-id="ck9zgrczw005pevhpeb09e23t" class="article-share-link">
                                             分享
                                         </a>
                                         
@@ -711,7 +711,7 @@
   
     
       <nav class="page-nav">
-        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
       </nav>
     
   </section>
